@@ -63,15 +63,30 @@
   font-size: var(--wp--preset--font-size--md);
   color: var(--wp--preset--color--off-black);
   line-height: 1.6;
+}
 
-  /* ── Full-bleed breakout ────────────────────────────────────────
-     WordPress wraps Custom HTML blocks in a content-width container
-     (~1300px). This breaks the component out to full viewport width
-     regardless of the theme's layout.contentSize setting.
-     The inner .eh-container still constrains text to 1300px.
-  ──────────────────────────────────────────────────────────────── */
-  width: 100vw;
-  margin-inline: calc(50% - 50vw);
+/* ── Full-bleed: escape WordPress content-width constraint ──────
+   Gutenberg's constrained layout applies max-width and auto margins
+   to every direct child of .wp-block-post-content, including our
+   .wp-block-html wrappers. This mirrors what WP does for .alignfull
+   natively — negative root-padding margins to escape the page gutter.
+
+   --wp--style--root--padding-left/right are injected by Gutenberg
+   when useRootPaddingAwareAlignments is enabled (which EH uses).
+   Falls back to the theme's default 1.5rem page padding.
+
+   JS in 05-scripts.html also adds .alignfull to the wrapper as
+   a secondary mechanism.
+──────────────────────────────────────────────────────────────── */
+.wp-block-html:has(> .eh-resource-landing) {
+  max-width: none !important;
+  width: calc(
+    100% +
+    var(--wp--style--root--padding-left,  1.5rem) +
+    var(--wp--style--root--padding-right, 1.5rem)
+  ) !important;
+  margin-inline-start: calc(-1 * var(--wp--style--root--padding-left,  1.5rem)) !important;
+  margin-inline-end:   calc(-1 * var(--wp--style--root--padding-right, 1.5rem)) !important;
 }
 
 .eh-resource-landing a {

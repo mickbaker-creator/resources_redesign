@@ -28,6 +28,7 @@
      Initialise once the DOM is ready
   ────────────────────────────────────────────────────────── */
   function init() {
+    initFullBleed();
     initTracking();
     initFormTray();
     initCarousels();
@@ -37,6 +38,24 @@
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     FULL-BLEED BREAKOUT
+     Gutenberg's constrained layout applies max-width to every
+     .wp-block-html block. Adding .alignfull tells WP's layout
+     CSS to expand it to full viewport width — the same way
+     native Gutenberg blocks handle full-width alignment.
+     CSS in 00-styles.html provides the same fix without JS
+     via :has(); this is a belt-and-suspenders fallback.
+  ══════════════════════════════════════════════════════════ */
+  function initFullBleed() {
+    document.querySelectorAll('.eh-resource-landing').forEach(function (landing) {
+      var block = landing.closest('.wp-block-html');
+      if (block) {
+        block.classList.add('alignfull');
+      }
+    });
   }
 
   /* ══════════════════════════════════════════════════════════
