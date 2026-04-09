@@ -77,12 +77,10 @@
   </div><!-- /eh-form-tray -->
 
 </div><!-- /eh-resource-landing -->
-
-<script>
-(function () {
-  'use strict';
-
-  var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
+<!--
+  Marketo form init is handled by 05-scripts.html (initMarketoForm).
+  No <script> block here — WordPress was mangling the JS when saving.
+-->
 
   var mktoRetries = 0;
   var MKTO_MAX_RETRIES = 60; // 30 s — GTM can fire late on heavy pages

@@ -34,6 +34,9 @@
     initCarousels();
   }
 
+  // Marketo form init runs at window.load (after GTM/theme scripts)
+  var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -273,6 +276,124 @@
       if (prevBtn) prevBtn.addEventListener('click', function () { goTo(currentIndex - 1); });
       if (nextBtn) nextBtn.addEventListener('click', function () { goTo(currentIndex + 1); });
     });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     MARKETO FORM INIT
+     Moved here from 04-form-tray.html because WordPress was
+     corrupting the JS when saving that block (SyntaxError).
+     Runs at window.load so EH theme/GTM has time to define
+     MktoForms2 before we start polling.
+  ══════════════════════════════════════════════════════════ */
+  var mktoRetries = 0;
+  var MKTO_MAX_RETRIES = 60;
+
+  function showFormError() {
+    var loader = document.querySelector('.eh-form-loading');
+    if (loader) {
+      loader.innerHTML = 'The form could not load. Please try refreshing, or email us to receive the report directly.';
+    }
+  }
+
+  function initMarketoForm() {
+    console.log('[EH Form] initMarketoForm. MktoForms2:', typeof MktoForms2, 'retry:', mktoRetries);
+    if (typeof MktoForms2 === 'undefined') {
+      mktoRetries++;
+      if (mktoRetries >= MKTO_MAX_RETRIES) {
+        console.error('[EH Form] MktoForms2 never loaded.');
+        showFormError();
+        return;
+      }
+      setTimeout(initMarketoForm, 500);
+      return;
+    }
+
+    MktoForms2.whenReady(function (form) {
+      if (form.getId() !== 1737) return;
+      console.log('[EH Form] whenReady fired for form 1737.');
+
+      var formEl = form.getFormElem()[0];
+
+      formEl.removeAttribute('style');
+      formEl.querySelectorAll('[style]').forEach(function (el) {
+        el.removeAttribute('style');
+      });
+
+      document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
+        link.disabled = true;
+      });
+
+      var hintOverrides = {
+        'InstructEmail':             'This lets us send important updates related to your enquiry.',
+        'InstructNumberOfEmployees': 'This helps us recommend the right solutions and resources.'
+      };
+      Object.keys(hintOverrides).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = hintOverrides[id];
+      });
+
+      var countrySelect = document.getElementById('Country');
+      if (countrySelect && countrySelect.options[0] && countrySelect.options[0].value !== '') {
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Country';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        countrySelect.insertBefore(placeholder, countrySelect.firstChild);
+      }
+
+      var tray     = document.getElementById('eh-form-tray');
+      var formBody = tray && tray.querySelector('.eh-form-body');
+      var btnRow   = formEl.querySelector('.mktoButtonRow');
+      if (tray && formBody && btnRow) {
+        var footer = document.createElement('div');
+        footer.className = 'eh-form-footer';
+        footer.appendChild(btnRow);
+        formBody.insertAdjacentElement('afterend', footer);
+      }
+
+      var scrollBody = tray && tray.querySelector('.eh-form-body');
+      var allFields  = Array.from(formEl.querySelectorAll(
+        'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
+      ));
+      allFields.forEach(function (field, index) {
+        var evt = field.tagName === 'SELECT' ? 'change' : 'blur';
+        field.addEventListener(evt, function () {
+          if (!field.value) return;
+          var next = null;
+          for (var i = index + 1; i < allFields.length; i++) {
+            if (!allFields[i].value) { next = allFields[i]; break; }
+          }
+          if (next && scrollBody) {
+            var row = next.closest('.mktoFormRow') || next.parentElement;
+            requestAnimationFrame(function () {
+              row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+          }
+        });
+      });
+
+      var submitBtn = formEl.querySelector('.mktoButton');
+      if (submitBtn) submitBtn.textContent = 'Download now';
+
+      form.onSuccess(function () {
+        window.location.href = REDIRECT_URL;
+        return false;
+      });
+    });
+
+    try {
+      MktoForms2.loadForm('https://hr.employmenthero.io', '387-SZZ-170', 1737);
+    } catch (e) {
+      console.error('[EH Form] loadForm error:', e);
+      showFormError();
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    initMarketoForm();
+  } else {
+    window.addEventListener('load', initMarketoForm);
   }
 
   /* ──────────────────────────────────────────────────────────
