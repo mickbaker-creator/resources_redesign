@@ -9,24 +9,25 @@
   · ARIA state (aria-expanded, aria-hidden) on triggers + tray
   · Image preview carousel with keyboard + ARIA support
   · dataLayer tracking for all tagged interactions
+  · Marketo form initialisation
 
   CONFIGURE: Update RESOURCE_NAME and RESOURCE_TYPE below
   to match the specific resource on this page.
-═══════════════════════════════════════════════════════════ -->
+
+  NOTE: All && operators have been replaced with nested if()
+  statements, and all block comments use // instead of slash-star
+  to prevent WordPress from corrupting the script on save.
+════════════════════════════════════════════════════════════ -->
 <script>
 (function () {
   'use strict';
 
-  /* ──────────────────────────────────────────────────────────
-     RESOURCE METADATA
-     Update these values for each resource page.
-  ────────────────────────────────────────────────────────── */
+  // RESOURCE METADATA — update these values for each resource page.
   var RESOURCE_NAME = '2025 Hiring Snapshot Report: Current Trends in Recruitment';
   var RESOURCE_TYPE = 'Report';
 
-  /* ──────────────────────────────────────────────────────────
-     Initialise once the DOM is ready
-  ────────────────────────────────────────────────────────── */
+  var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
+
   function init() {
     initFullBleed();
     initTracking();
@@ -34,24 +35,18 @@
     initCarousels();
   }
 
-  // Marketo form init runs at window.load (after GTM/theme scripts)
-  var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  /* ══════════════════════════════════════════════════════════
-     FULL-BLEED BREAKOUT
-     Gutenberg's constrained layout applies max-width to every
-     .wp-block-html block. Adding .alignfull tells WP's layout
-     CSS to expand it to full viewport width — the same way
-     native Gutenberg blocks handle full-width alignment.
-     CSS in 00-styles.html provides the same fix without JS
-     via :has(); this is a belt-and-suspenders fallback.
-  ══════════════════════════════════════════════════════════ */
+  // ============================================================
+  // FULL-BLEED BREAKOUT
+  // Adds .alignfull to each .wp-block-html wrapper so Gutenberg
+  // expands it to full viewport width. Belt-and-suspenders for
+  // the :has() CSS rule in 00-styles.html.
+  // ============================================================
   function initFullBleed() {
     document.querySelectorAll('.eh-resource-landing').forEach(function (landing) {
       var block = landing.closest('.wp-block-html');
@@ -61,28 +56,11 @@
     });
   }
 
-  /* ══════════════════════════════════════════════════════════
-     DATALAYER TRACKING
-     Uses event delegation on document so it works with
-     dynamically rendered content (e.g., Marketo form).
-
-     Tag elements with:
-       data-gtm-event="<interaction_type>"
-       data-gtm-label="<human-readable label>"
-
-     Each click fires a single 'resource_page_interaction' event
-     that can be picked up in GTM and forwarded to GA4 or any
-     other analytics destination.
-
-     dataLayer event shape:
-     {
-       event:             'resource_page_interaction',
-       interaction_type:  'carousel_next',        // from data-gtm-event
-       interaction_label: 'Preview carousel — next', // from data-gtm-label
-       resource_name:     '<RESOURCE_NAME>',
-       resource_type:     '<RESOURCE_TYPE>'
-     }
-  ══════════════════════════════════════════════════════════ */
+  // ============================================================
+  // DATALAYER TRACKING
+  // Event delegation on document — works with dynamic content.
+  // Tag elements with data-gtm-event and data-gtm-label.
+  // ============================================================
   function initTracking() {
     window.dataLayer = window.dataLayer || [];
 
@@ -98,42 +76,26 @@
         resource_type:     RESOURCE_TYPE
       });
     });
-
-    /*
-      Tracked interaction types (set via data-gtm-event):
-      ──────────────────────────────────────────────────
-      carousel_prev       → Preview carousel previous arrow
-      carousel_next       → Preview carousel next arrow
-      carousel_expand     → Preview carousel expand / full-size
-      whitelabel_pill     → "Whitelabel available" pill (hero)
-      cta_hero_secondary  → Hero secondary CTA (e.g. "Get the Hiring Toolkit")
-      cta_sticky_download → "Download this resource" sticky sidebar card
-      webinar_block       → Related webinar sidebar block
-      cta_book_demo       → "Need help? Book a Demo" sidebar CTA
-      cta_content_gate    → "Continue reading" content gate CTA
-      cta_bundle          → Bundle / toolkit CTA below article
-      related_card        → Any card in the Related Resources section
-    */
   }
 
-  /* ══════════════════════════════════════════════════════════
-     FORM TRAY
-     — Opens as a slide-in dialog with a backdrop overlay
-     — Moves focus into the tray on open; returns it on close
-     — Traps focus inside the tray while it is open
-     — Closes on backdrop click or Escape key
-  ══════════════════════════════════════════════════════════ */
+  // ============================================================
+  // FORM TRAY
+  // Opens as a slide-in dialog with a backdrop overlay.
+  // Moves focus into the tray on open; returns it on close.
+  // Traps focus while open. Closes on backdrop click or Escape.
+  // ============================================================
   function initFormTray() {
     var tray    = document.getElementById('eh-form-tray');
     var overlay = document.getElementById('eh-form-overlay');
 
-    if (!tray || !overlay) return;
+    if (!tray) return;
+    if (!overlay) return;
 
     var openButtons  = document.querySelectorAll('[data-open-form]');
     var closeButtons = document.querySelectorAll('[data-close-form]');
     var lastFocused  = null;
 
-    /* ── Open ── */
+    // ── Open ──
     function openTray(triggerEl) {
       lastFocused = triggerEl || document.activeElement;
 
@@ -141,7 +103,7 @@
       overlay.classList.add('open');
 
       tray.removeAttribute('aria-hidden');
-      overlay.setAttribute('aria-hidden', 'true'); /* backdrop is decorative */
+      overlay.setAttribute('aria-hidden', 'true');
 
       document.body.style.overflow = 'hidden';
 
@@ -149,7 +111,6 @@
         btn.setAttribute('aria-expanded', 'true');
       });
 
-      // Move focus to first focusable element in the tray
       requestAnimationFrame(function () {
         var first = getFirstFocusable(tray);
         if (first) first.focus();
@@ -158,7 +119,7 @@
       document.addEventListener('keydown', handleTrapFocus);
     }
 
-    /* ── Close ── */
+    // ── Close ──
     function closeTray() {
       tray.classList.remove('open');
       overlay.classList.remove('open');
@@ -172,13 +133,15 @@
 
       document.removeEventListener('keydown', handleTrapFocus);
 
-      if (lastFocused && typeof lastFocused.focus === 'function') {
-        lastFocused.focus();
-        lastFocused = null;
+      if (lastFocused) {
+        if (typeof lastFocused.focus === 'function') {
+          lastFocused.focus();
+          lastFocused = null;
+        }
       }
     }
 
-    /* ── Focus trap ── */
+    // ── Focus trap ──
     function handleTrapFocus(e) {
       if (e.key === 'Escape') {
         closeTray();
@@ -206,7 +169,7 @@
       }
     }
 
-    /* ── Wire up events ── */
+    // ── Wire up events ──
     openButtons.forEach(function (btn) {
       btn.addEventListener('click', function () { openTray(btn); });
     });
@@ -218,11 +181,11 @@
     overlay.addEventListener('click', closeTray);
   }
 
-  /* ══════════════════════════════════════════════════════════
-     IMAGE PREVIEW CAROUSEL
-     — Syncs main image, thumbnail state, and counter
-     — Updates aria-pressed on thumbs and alt text on main image
-  ══════════════════════════════════════════════════════════ */
+  // ============================================================
+  // IMAGE PREVIEW CAROUSEL
+  // Syncs main image, thumbnail state, and counter.
+  // Updates aria-pressed on thumbs and alt text on main image.
+  // ============================================================
   function initCarousels() {
     var carousels = document.querySelectorAll('[data-carousel]');
 
@@ -233,27 +196,25 @@
       var nextBtn = carousel.querySelector('[data-carousel-next]');
       var counter = carousel.querySelector('[data-carousel-counter]');
 
-      if (!mainImg || !thumbs.length) return;
+      if (!mainImg) return;
+      if (!thumbs.length) return;
 
       var currentIndex = 0;
 
-      // Derive full-size srcs from thumb srcs
-      // Thumbs use -thumb suffix; full images don't.
+      // Derive full-size srcs from thumb srcs (thumbs use -thumb suffix).
       var images = Array.from(thumbs).map(function (thumb) {
         var img = thumb.querySelector('img');
         if (!img) return '';
         return img.src.replace('-thumb', '');
       }).filter(Boolean);
 
-      // Fallback: if all thumbs share the same src pattern we keep original
       if (!images.length) return;
 
-      /* ── Navigate to index ── */
       function goTo(index) {
         currentIndex = (index + images.length) % images.length;
 
         mainImg.src = images[currentIndex];
-        mainImg.alt = 'Report preview — page ' + (currentIndex + 1) + ' of ' + images.length;
+        mainImg.alt = 'Report preview page ' + (currentIndex + 1) + ' of ' + images.length;
 
         thumbs.forEach(function (thumb, i) {
           var isActive = i === currentIndex;
@@ -265,7 +226,7 @@
           counter.textContent = (currentIndex + 1) + ' / ' + images.length;
         }
 
-        // Show glass overlay with download nudge on the last slide
+        // Show glass overlay with download nudge on the last slide.
         carousel.classList.toggle('is-last-slide', currentIndex === images.length - 1);
       }
 
@@ -278,29 +239,25 @@
     });
   }
 
-  /* ══════════════════════════════════════════════════════════
-     MARKETO FORM INIT
-     Moved here from 04-form-tray.html because WordPress was
-     corrupting the JS when saving that block (SyntaxError).
-     Runs at window.load so EH theme/GTM has time to define
-     MktoForms2 before we start polling.
-  ══════════════════════════════════════════════════════════ */
+  // ============================================================
+  // MARKETO FORM INIT
+  // Runs at window.load so the EH theme has time to define
+  // MktoForms2 before we start polling for it.
+  // ============================================================
   var mktoRetries = 0;
   var MKTO_MAX_RETRIES = 60;
 
   function showFormError() {
     var loader = document.querySelector('.eh-form-loading');
     if (loader) {
-      loader.innerHTML = 'The form could not load. Please try refreshing, or email us to receive the report directly.';
+      loader.innerHTML = 'The form could not load. Please try refreshing the page.';
     }
   }
 
   function initMarketoForm() {
-    console.log('[EH Form] initMarketoForm. MktoForms2:', typeof MktoForms2, 'retry:', mktoRetries);
     if (typeof MktoForms2 === 'undefined') {
       mktoRetries++;
       if (mktoRetries >= MKTO_MAX_RETRIES) {
-        console.error('[EH Form] MktoForms2 never loaded.');
         showFormError();
         return;
       }
@@ -310,49 +267,58 @@
 
     MktoForms2.whenReady(function (form) {
       if (form.getId() !== 1737) return;
-      console.log('[EH Form] whenReady fired for form 1737.');
 
       var formEl = form.getFormElem()[0];
 
+      // Strip Marketo inline styles
       formEl.removeAttribute('style');
       formEl.querySelectorAll('[style]').forEach(function (el) {
         el.removeAttribute('style');
       });
 
+      // Disable Marketo stylesheet
       document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
         link.disabled = true;
       });
 
-      var hintOverrides = {
-        'InstructEmail':             'This lets us send important updates related to your enquiry.',
-        'InstructNumberOfEmployees': 'This helps us recommend the right solutions and resources.'
-      };
-      Object.keys(hintOverrides).forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) el.textContent = hintOverrides[id];
-      });
+      // Update hint texts
+      var hintEmail    = document.getElementById('InstructEmail');
+      var hintEmployees = document.getElementById('InstructNumberOfEmployees');
+      if (hintEmail) hintEmail.textContent = 'This lets us send important updates related to your enquiry.';
+      if (hintEmployees) hintEmployees.textContent = 'This helps us recommend the right solutions and resources.';
 
+      // Country placeholder option
       var countrySelect = document.getElementById('Country');
-      if (countrySelect && countrySelect.options[0] && countrySelect.options[0].value !== '') {
-        var placeholder = document.createElement('option');
-        placeholder.value = '';
-        placeholder.textContent = 'Country';
-        placeholder.disabled = true;
-        placeholder.selected = true;
-        countrySelect.insertBefore(placeholder, countrySelect.firstChild);
+      if (countrySelect) {
+        if (countrySelect.options[0]) {
+          if (countrySelect.options[0].value !== '') {
+            var placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Country';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            countrySelect.insertBefore(placeholder, countrySelect.firstChild);
+          }
+        }
       }
 
-      var tray     = document.getElementById('eh-form-tray');
-      var formBody = tray && tray.querySelector('.eh-form-body');
-      var btnRow   = formEl.querySelector('.mktoButtonRow');
-      if (tray && formBody && btnRow) {
-        var footer = document.createElement('div');
-        footer.className = 'eh-form-footer';
-        footer.appendChild(btnRow);
-        formBody.insertAdjacentElement('afterend', footer);
+      // Move submit button to sticky footer
+      var tray    = document.getElementById('eh-form-tray');
+      var btnRow  = formEl.querySelector('.mktoButtonRow');
+      if (tray) {
+        var formBody = tray.querySelector('.eh-form-body');
+        if (formBody) {
+          if (btnRow) {
+            var footer = document.createElement('div');
+            footer.className = 'eh-form-footer';
+            footer.appendChild(btnRow);
+            formBody.insertAdjacentElement('afterend', footer);
+          }
+        }
       }
 
-      var scrollBody = tray && tray.querySelector('.eh-form-body');
+      // Auto-scroll to next empty field after filling each field
+      var scrollBody = tray ? tray.querySelector('.eh-form-body') : null;
       var allFields  = Array.from(formEl.querySelectorAll(
         'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
       ));
@@ -364,18 +330,22 @@
           for (var i = index + 1; i < allFields.length; i++) {
             if (!allFields[i].value) { next = allFields[i]; break; }
           }
-          if (next && scrollBody) {
-            var row = next.closest('.mktoFormRow') || next.parentElement;
-            requestAnimationFrame(function () {
-              row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            });
+          if (next) {
+            if (scrollBody) {
+              var row = next.closest('.mktoFormRow') || next.parentElement;
+              requestAnimationFrame(function () {
+                row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              });
+            }
           }
         });
       });
 
+      // Override submit button text
       var submitBtn = formEl.querySelector('.mktoButton');
       if (submitBtn) submitBtn.textContent = 'Download now';
 
+      // Redirect on successful submission
       form.onSuccess(function () {
         window.location.href = REDIRECT_URL;
         return false;
@@ -385,7 +355,6 @@
     try {
       MktoForms2.loadForm('https://hr.employmenthero.io', '387-SZZ-170', 1737);
     } catch (e) {
-      console.error('[EH Form] loadForm error:', e);
       showFormError();
     }
   }
@@ -396,9 +365,9 @@
     window.addEventListener('load', initMarketoForm);
   }
 
-  /* ──────────────────────────────────────────────────────────
-     HELPERS
-  ────────────────────────────────────────────────────────── */
+  // ============================================================
+  // HELPERS
+  // ============================================================
   var FOCUSABLE_SELECTOR = [
     'a[href]',
     'button:not([disabled])',
