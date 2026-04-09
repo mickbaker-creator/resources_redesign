@@ -115,39 +115,6 @@
           if (el) el.textContent = hintOverrides[id];
         });
 
-        // ── GDPR checkbox: auto-check, hide row, show static disclaimer ─
-        // Employment Hero's legal team handles consent via the button-click
-        // model. We pre-check the required GDPR field and replace the
-        // checkbox row with a plain-text statement above the marketing opt-in.
-        var gdprCheckbox = formEl.querySelector('input[name="Opted_In_GDPR__c"]');
-        if (gdprCheckbox) {
-          gdprCheckbox.checked = true;
-
-          var gdprRow = gdprCheckbox.closest('.mktoFormRow');
-
-          var disclaimer = document.createElement('p');
-          disclaimer.className = 'eh-form-disclaimer';
-          disclaimer.innerHTML =
-            'By clicking \u201cDownload Now\u201d, you agree to our ' +
-            '<a href="https://employmenthero.com/legals/terms-conditions/" target="_blank" rel="noopener">Terms &amp; Conditions</a>' +
-            ', and acknowledge our ' +
-            '<a href="https://employmenthero.com/legals/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>' +
-            ' and ' +
-            '<a href="https://employmenthero.com/legals/product-statement/" target="_blank" rel="noopener">Product Statement</a>' +
-            '.';
-
-          gdprRow.insertAdjacentElement('beforebegin', disclaimer);
-          gdprRow.style.display = 'none';
-        }
-
-        // ── Marketing opt-in checkbox: hide row ───────────────────
-        // Disclaimer statement covers consent; hide the marketing
-        // checkbox row entirely to keep the form clean.
-        var marketingCheckbox = formEl.querySelector('input[name="marketingOptInOriginallyConsented"]');
-        if (marketingCheckbox) {
-          marketingCheckbox.closest('.mktoFormRow').style.display = 'none';
-        }
-
         // ── Country: inject a placeholder option ──────────────────
         // The Country select has no empty default option, so the field
         // appears blank. Add a disabled placeholder so it reads "Country"
