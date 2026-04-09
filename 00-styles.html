@@ -1654,13 +1654,13 @@
   border-color: #16a34a !important;
 }
 
-/* Required asterisk in checkbox labels */
-#eh-form-tray .mktoLogicalField .mktoAsterix,
-#eh-form-tray .mktoCheckboxList .mktoAsterix {
-  display: inline !important;
-  color: var(--wp--preset--color--error-600, #dc2626) !important;
-  margin-right: 0.25rem;
+/* Required asterisk injected into checkbox/radio labels by JS.
+   The outer .mktoLabel (Marketo's own asterisk container) is hidden,
+   so JS copies the marker into the visible inner label as .eh-required-mark. */
+.eh-required-mark {
+  color: var(--wp--preset--color--error-600, #dc2626);
   font-weight: 600;
+  margin-right: 0.1875rem;
 }
 
 /* Autofill override (Chrome/Safari inject a blue background) */

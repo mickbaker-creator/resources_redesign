@@ -282,15 +282,37 @@
         link.disabled = true;
       });
 
-      // Update hint texts (IDs follow Marketo's Instruct{FieldId} pattern)
-      var hintEmail     = document.getElementById('InstructEmail');
-      var hintCompany   = document.getElementById('InstructCompany');
-      var hintIndustry  = document.getElementById('InstructIndustry');
-      var hintEmployees = document.getElementById('InstructNumberOfEmployees');
-      if (hintEmail)     hintEmail.textContent     = 'This lets us send important updates related to your enquiry.';
-      if (hintCompany)   hintCompany.textContent   = 'This helps us understand your business and industry better.';
-      if (hintIndustry)  hintIndustry.textContent  = 'This helps us understand your business and industry better.';
-      if (hintEmployees) hintEmployees.textContent = 'This helps us recommend the right solutions and resources.';
+      // Update hint texts. Finds each field by its Marketo field ID, then
+      // targets the .mktoInstruction in the same row — more reliable than
+      // the InstructXxx IDs which may not exist depending on form config.
+      function setHint(fieldId, text) {
+        var field = formEl.querySelector('#' + fieldId);
+        if (!field) return;
+        var row = field.closest('.mktoFormRow');
+        if (!row) return;
+        var hint = row.querySelector('.mktoInstruction');
+        if (hint) hint.textContent = text;
+      }
+      setHint('Email',             'This lets us send important updates related to your enquiry.');
+      setHint('Company',           'This helps us understand your business and industry better.');
+      setHint('Industry',          'This helps us understand your business and industry better.');
+      setHint('NumberOfEmployees', 'This helps us recommend the right solutions and resources.');
+
+      // Inject required asterisk into visible checkbox/radio labels.
+      // The outer .mktoLabel (which holds Marketo's asterisk) is hidden by our
+      // CSS so the asterisk is invisible. We copy it into the visible inner
+      // label instead.
+      formEl.querySelectorAll('.mktoFormRow').forEach(function (row) {
+        var outerAsterix = row.querySelector('.mktoLabel .mktoAsterix');
+        if (!outerAsterix) return;
+        row.querySelectorAll('.mktoLogicalField label').forEach(function (lbl) {
+          var req = document.createElement('span');
+          req.setAttribute('aria-hidden', 'true');
+          req.className = 'eh-required-mark';
+          req.textContent = '*';
+          lbl.insertBefore(req, lbl.firstChild);
+        });
+      });
 
       // Country placeholder option
       var countrySelect = document.getElementById('Country');
