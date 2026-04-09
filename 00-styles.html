@@ -1657,4 +1657,14 @@
 @keyframes eh-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ── Auto-hide loader once Marketo populates the form ───────────
+   Uses :has() so this works regardless of JS callback timing or
+   whether WordPress strips the id="eh-form-loading" attribute.
+   When #mktoForm_1737 has children (i.e. Marketo rendered into it)
+   the loader is hidden automatically.
+──────────────────────────────────────────────────────────────── */
+.eh-form-body:has(#mktoForm_1737:not(:empty)) .eh-form-loading {
+  display: none !important;
+}
 </style>

@@ -110,118 +110,94 @@
       return;
     }
 
-    // ── Timeout: if the loadForm callback never fires, show error ─
-    var formCallbackFired = false;
-    setTimeout(function () {
-      if (!formCallbackFired) {
-        console.error('[EH Form] loadForm callback never fired — form ID, account, or server may be incorrect, or the domain may not be whitelisted in Marketo.');
-        showFormError();
-      }
-    }, 12000);
+    // ── whenReady fires when form 1737 renders, regardless of who
+    //    triggered the load. More reliable than the loadForm callback.
+    MktoForms2.whenReady(function (form) {
+      if (form.getId() !== 1737) return; // guard: only affect our form
 
+      var formEl = form.getFormElem()[0];
+
+      // ── Strip Marketo's injected inline styles ──────────────────
+      formEl.removeAttribute('style');
+      formEl.querySelectorAll('[style]').forEach(function (el) {
+        el.removeAttribute('style');
+      });
+
+      // ── Disable Marketo's own stylesheet ─────────────────────────
+      document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
+        link.disabled = true;
+      });
+
+      // ── Update hint texts ────────────────────────────────────────
+      var hintOverrides = {
+        'InstructEmail':             'This lets us send important updates related to your enquiry.',
+        'InstructNumberOfEmployees': 'This helps us recommend the right solutions and resources.'
+      };
+      Object.keys(hintOverrides).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = hintOverrides[id];
+      });
+
+      // ── Country: inject a placeholder option ─────────────────────
+      var countrySelect = document.getElementById('Country');
+      if (countrySelect && countrySelect.options[0] && countrySelect.options[0].value !== '') {
+        var countryPlaceholder = document.createElement('option');
+        countryPlaceholder.value = '';
+        countryPlaceholder.textContent = 'Country';
+        countryPlaceholder.disabled = true;
+        countryPlaceholder.selected = true;
+        countrySelect.insertBefore(countryPlaceholder, countrySelect.firstChild);
+      }
+
+      // ── Move submit button to sticky footer ──────────────────────
+      var tray      = document.getElementById('eh-form-tray');
+      var formBody  = tray && tray.querySelector('.eh-form-body');
+      var buttonRow = formEl.querySelector('.mktoButtonRow');
+      if (tray && formBody && buttonRow) {
+        var footer = document.createElement('div');
+        footer.className = 'eh-form-footer';
+        footer.appendChild(buttonRow);
+        formBody.insertAdjacentElement('afterend', footer);
+      }
+
+      // ── Auto-scroll to next empty field after each field fills ───
+      var scrollableBody = tray && tray.querySelector('.eh-form-body');
+      var allFields = Array.from(formEl.querySelectorAll(
+        'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
+      ));
+
+      allFields.forEach(function (field, index) {
+        var evt = field.tagName === 'SELECT' ? 'change' : 'blur';
+        field.addEventListener(evt, function () {
+          if (!field.value) return;
+          var nextField = null;
+          for (var i = index + 1; i < allFields.length; i++) {
+            if (!allFields[i].value) { nextField = allFields[i]; break; }
+          }
+          if (nextField && scrollableBody) {
+            var row = nextField.closest('.mktoFormRow') || nextField.parentElement;
+            requestAnimationFrame(function () {
+              row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+          }
+        });
+      });
+
+      // ── Override submit button text ──────────────────────────────
+      var submitBtn = formEl.querySelector('.mktoButton');
+      if (submitBtn) submitBtn.textContent = 'Download now';
+
+      // ── Redirect on successful submission ────────────────────────
+      form.onSuccess(function () {
+        window.location.href = REDIRECT_URL;
+        return false;
+      });
+    });
+
+    // ── Trigger the form to load ─────────────────────────────────
+    // whenReady above handles all customisation once it renders.
     try {
-      MktoForms2.loadForm(
-        'https://hr.employmenthero.io',
-        '387-SZZ-170',
-        1737,
-        function (form) {
-          formCallbackFired = true;
-          var formEl = form.getFormElem()[0];
-
-        // ── Strip Marketo's injected inline styles ──────────────────
-        formEl.removeAttribute('style');
-        formEl.querySelectorAll('[style]').forEach(function (el) {
-          el.removeAttribute('style');
-        });
-
-        // ── Disable Marketo's own stylesheet ────────────────────────
-        document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
-          link.disabled = true;
-        });
-
-        // ── Update hint texts ─────────────────────────────────────
-        var hintOverrides = {
-          'InstructEmail':             'This lets us send important updates related to your enquiry.',
-          'InstructNumberOfEmployees': 'This helps us recommend the right solutions and resources.'
-        };
-        Object.keys(hintOverrides).forEach(function (id) {
-          var el = document.getElementById(id);
-          if (el) el.textContent = hintOverrides[id];
-        });
-
-        // ── Country: inject a placeholder option ──────────────────
-        // The Country select has no empty default option, so the field
-        // appears blank. Add a disabled placeholder so it reads "Country"
-        // until the user makes a selection.
-        var countrySelect = document.getElementById('Country');
-        if (countrySelect && countrySelect.options[0] && countrySelect.options[0].value !== '') {
-          var countryPlaceholder = document.createElement('option');
-          countryPlaceholder.value = '';
-          countryPlaceholder.textContent = 'Country';
-          countryPlaceholder.disabled = true;
-          countryPlaceholder.selected = true;
-          countrySelect.insertBefore(countryPlaceholder, countrySelect.firstChild);
-        }
-
-        // ── Move submit button to sticky footer ───────────────────
-        // Extracts .mktoButtonRow from the scrollable form body and
-        // appends it as a fixed footer so it's always visible.
-        var tray      = document.getElementById('eh-form-tray');
-        var formBody  = tray && tray.querySelector('.eh-form-body');
-        var buttonRow = formEl.querySelector('.mktoButtonRow');
-        if (tray && formBody && buttonRow) {
-          var footer = document.createElement('div');
-          footer.className = 'eh-form-footer';
-          footer.appendChild(buttonRow);
-          formBody.insertAdjacentElement('afterend', footer);
-        }
-
-        // ── Auto-scroll to next empty field after each field fills ─
-        // As the user completes a field the form scrolls just enough
-        // to bring the next empty field into view — no jarring jumps.
-        var scrollableBody = tray && tray.querySelector('.eh-form-body');
-        var allFields = Array.from(formEl.querySelectorAll(
-          'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
-        ));
-
-        allFields.forEach(function (field, index) {
-          var evt = field.tagName === 'SELECT' ? 'change' : 'blur';
-          field.addEventListener(evt, function () {
-            if (!field.value) return;
-
-            // Find the next unfilled field
-            var nextField = null;
-            for (var i = index + 1; i < allFields.length; i++) {
-              if (!allFields[i].value) {
-                nextField = allFields[i];
-                break;
-              }
-            }
-
-            if (nextField && scrollableBody) {
-              var row = nextField.closest('.mktoFormRow') || nextField.parentElement;
-              requestAnimationFrame(function () {
-                row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-              });
-            }
-          });
-        });
-
-        // ── Override submit button text ────────────────────────────
-        var submitBtn = formEl.querySelector('.mktoButton');
-        if (submitBtn) submitBtn.textContent = 'Download now';
-
-        // ── Hide loading indicator ─────────────────────────────────
-        var loader = document.getElementById('eh-form-loading');
-        if (loader) loader.style.display = 'none';
-
-        // ── Redirect on successful submission ─────────────────────
-        form.onSuccess(function () {
-          window.location.href = REDIRECT_URL;
-          return false;
-        });
-      }
-    );
+      MktoForms2.loadForm('https://hr.employmenthero.io', '387-SZZ-170', 1737);
     } catch (e) {
       console.error('[EH Form] MktoForms2.loadForm threw an error:', e);
       showFormError();
