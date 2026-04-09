@@ -19,22 +19,35 @@ const fs   = require('fs');
 const path = require('path');
 
 /* ── Preview image substitutions ───────────────────────────────
-   Left side:  placeholder paths used in the WP block files
-   Right side: Unsplash URLs used in the Vercel preview only
+   Left side:  WP media paths used in the block files (production)
+   Right side: local /images/* paths served from dist/ (Vercel preview)
+
+   To update carousel images: save the report page screenshots to the
+   images/ folder at the repo root using the filenames below, then
+   push — Vercel will pick them up on next deploy.
+
+   Thumbnail and full-size share the same source file; the carousel CSS
+   handles sizing so no separate crop is needed for the preview.
 ─────────────────────────────────────────────────────────────── */
 const IMAGE_SUBS = {
+  /* Full-size */
   '/wp-content/uploads/2025/05/hiring-snapshot-report-cover.jpg':
-    'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop',
+    '/images/hiring-snapshot-report-cover.jpg',
   '/wp-content/uploads/2025/05/hiring-snapshot-report-key-findings.jpg':
-    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=800&fit=crop',
+    '/images/hiring-snapshot-report-key-findings.jpg',
   '/wp-content/uploads/2025/05/hiring-snapshot-report-chart.jpg':
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=800&fit=crop',
+    '/images/hiring-snapshot-report-chart.jpg',
+  '/wp-content/uploads/2025/05/hiring-snapshot-report-wrap-up.jpg':
+    '/images/hiring-snapshot-report-wrap-up.jpg',
+  /* Thumbnails (same source file — CSS handles the smaller display size) */
   '/wp-content/uploads/2025/05/hiring-snapshot-report-cover-thumb.jpg':
-    'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=260&fit=crop',
+    '/images/hiring-snapshot-report-cover.jpg',
   '/wp-content/uploads/2025/05/hiring-snapshot-report-key-findings-thumb.jpg':
-    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=260&fit=crop',
+    '/images/hiring-snapshot-report-key-findings.jpg',
   '/wp-content/uploads/2025/05/hiring-snapshot-report-chart-thumb.jpg':
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&h=260&fit=crop',
+    '/images/hiring-snapshot-report-chart.jpg',
+  '/wp-content/uploads/2025/05/hiring-snapshot-report-wrap-up-thumb.jpg':
+    '/images/hiring-snapshot-report-wrap-up.jpg',
 };
 
 /* ── Block files (in render order) ─────────────────────────── */
@@ -248,5 +261,23 @@ const outFile = path.join(outDir, 'index.html');
 
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(outFile, html, 'utf8');
+
+/* ── Copy images/ → dist/images/ ────────────────────────────── */
+const imgSrc = path.join(__dirname, 'images');
+const imgDst = path.join(outDir, 'images');
+
+if (fs.existsSync(imgSrc)) {
+  fs.mkdirSync(imgDst, { recursive: true });
+  const copied = [];
+  fs.readdirSync(imgSrc).forEach(function (file) {
+    fs.copyFileSync(path.join(imgSrc, file), path.join(imgDst, file));
+    copied.push(file);
+  });
+  if (copied.length) {
+    console.log('✓  Copied ' + copied.length + ' image(s) → dist/images/');
+  }
+} else {
+  console.warn('⚠  images/ folder not found — carousel will show broken images until added');
+}
 
 console.log('✓  Built ' + outFile + ' (' + (html.length / 1024).toFixed(1) + ' kB)');
