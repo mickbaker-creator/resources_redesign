@@ -160,12 +160,27 @@
         -->
         <div class="eh-preview-wrapper" data-carousel>
 
+          <!-- Preview badge — always visible -->
+          <div class="eh-preview-badge" aria-hidden="true">Preview · 4 of 15 pages</div>
+
           <div class="eh-preview-main" data-carousel-main>
             <img
               src="https://employmenthero.com/wp-content/uploads/2026/04/1775706956412-9368b2d3-cb51-46e9-9482-49abc9efbd08_1.png"
               alt="2025 Hiring Snapshot Report — cover page"
               data-carousel-img
             >
+
+            <!-- Glass overlay — shown on last slide by JS -->
+            <div class="eh-preview-glass" aria-hidden="true">
+              <p class="eh-preview-glass-text">11 more pages inside</p>
+              <button
+                type="button"
+                class="eh-btn eh-btn-primary eh-preview-glass-cta"
+                data-open-form
+                aria-expanded="false"
+                aria-controls="eh-form-tray"
+              >Download the full report</button>
+            </div>
 
             <button
               type="button"
@@ -231,6 +246,8 @@
               <img src="https://employmenthero.com/wp-content/uploads/2026/04/1775706956412-9368b2d3-cb51-46e9-9482-49abc9efbd08_13.png" alt="">
             </button>
           </div>
+
+          <p class="eh-preview-pages-note">Showing 4 of 15 pages — download for the full report</p>
 
         </div><!-- /eh-preview-wrapper -->
 

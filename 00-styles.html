@@ -381,6 +381,75 @@
   border: 1px solid var(--wp--preset--color--neutral-200);
   border-radius: var(--rt-radius);
   padding: var(--wp--preset--spacing--4);
+  position: relative;
+}
+
+/* ── Preview badge ────────────────────────────────────────── */
+.eh-preview-badge {
+  position: absolute;
+  top: var(--wp--preset--spacing--3);
+  left: var(--wp--preset--spacing--3);
+  z-index: 3;
+  background: color-mix(in srgb, var(--wp--preset--color--off-black) 72%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: var(--wp--preset--color--white);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.625rem;
+  border-radius: 2rem;
+  pointer-events: none;
+}
+
+/* ── Glass overlay on last slide ─────────────────────────── */
+.eh-preview-glass {
+  display: none; /* shown via .is-last-slide class toggled by JS */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(
+    to bottom,
+    rgba(249, 245, 255, 0)   0%,
+    rgba(249, 245, 255, 0.82) 45%,
+    rgba(249, 245, 255, 0.97) 100%
+  );
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--wp--preset--spacing--3);
+  padding: var(--wp--preset--spacing--6);
+  text-align: center;
+  border-radius: 0 0 calc(var(--rt-radius) - 4px) calc(var(--rt-radius) - 4px);
+}
+
+.eh-preview-wrapper.is-last-slide .eh-preview-glass {
+  display: flex;
+}
+
+.eh-preview-glass-text {
+  font-size: var(--wp--preset--font-size--sm);
+  font-weight: 600;
+  color: var(--wp--preset--color--off-black);
+  margin: 0;
+}
+
+.eh-preview-glass-cta {
+  font-size: var(--wp--preset--font-size--sm) !important;
+  padding: 0.625rem 1.25rem !important;
+}
+
+/* ── Pages note below thumbnails ────────────────────────── */
+.eh-preview-pages-note {
+  font-size: var(--wp--preset--font-size--xs);
+  color: var(--wp--preset--color--neutral-500);
+  text-align: center;
+  margin: var(--wp--preset--spacing--2) 0 0;
 }
 
 .eh-preview-main {

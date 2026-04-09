@@ -242,6 +242,9 @@
         if (counter) {
           counter.textContent = (currentIndex + 1) + ' / ' + images.length;
         }
+
+        // Show glass overlay with download nudge on the last slide
+        carousel.classList.toggle('is-last-slide', currentIndex === images.length - 1);
       }
 
       thumbs.forEach(function (thumb, i) {
