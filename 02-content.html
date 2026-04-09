@@ -90,33 +90,29 @@
               <h2 class="eh-bundle-title">Get the Complete Hiring Toolkit</h2>
               <p class="eh-bundle-desc">4 resources in one download. Everything you need to hire smarter in 2025.</p>
               <ul class="eh-bundle-list" aria-label="Toolkit contents">
-                <li>
-                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  2025 Hiring Snapshot Report
+                <li class="eh-bundle-item">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>2025 Hiring Snapshot Report</span>
+                  <button type="button" class="eh-info-btn" aria-label="About the Hiring Snapshot Report" aria-expanded="false" data-info="art-info-report">i</button>
+                  <div class="eh-info-popover" id="art-info-report" role="tooltip" hidden>Benchmark your hiring spend against 1,000+ Australian SMEs. See where you stand on budget, platforms and staff turnover.</div>
                 </li>
-                <li>
-                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  Job Description Template Pack
+                <li class="eh-bundle-item">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>Job Description Template Pack</span>
+                  <button type="button" class="eh-info-btn" aria-label="About the Job Description Template Pack" aria-expanded="false" data-info="art-info-jd">i</button>
+                  <div class="eh-info-popover" id="art-info-jd" role="tooltip" hidden>Ready-to-edit templates for your most-hired roles. Cut writing time and publish compelling job ads faster.</div>
                 </li>
-                <li>
-                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  Employment Offer Letter Template
+                <li class="eh-bundle-item">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>Employment Offer Letter Template</span>
+                  <button type="button" class="eh-info-btn" aria-label="About the Employment Offer Letter Template" aria-expanded="false" data-info="art-info-offer">i</button>
+                  <div class="eh-info-popover" id="art-info-offer" role="tooltip" hidden>A professionally structured offer letter template. Just fill in the details and send.</div>
                 </li>
-                <li>
-                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  Interview Question Guide
+                <li class="eh-bundle-item">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>Interview Question Guide</span>
+                  <button type="button" class="eh-info-btn" aria-label="About the Interview Question Guide" aria-expanded="false" data-info="art-info-interview">i</button>
+                  <div class="eh-info-popover" id="art-info-interview" role="tooltip" hidden>Structured, competency-based interview questions by role type so every interview is consistent.</div>
                 </li>
               </ul>
               <button
@@ -143,21 +139,56 @@
         <!-- ── Sidebar ── -->
         <aside class="eh-sidebar" aria-label="Download and related content">
 
-          <!-- Download CTA — tracked -->
-          <div class="eh-sidebar-card">
-            <h2 class="eh-sidebar-title">Download this resource</h2>
-            <p class="eh-sidebar-desc">Get instant access to the 2025 Hiring Snapshot Report as a formatted PDF.</p>
-            <button
-              type="button"
-              class="eh-btn eh-btn-primary eh-btn-sm eh-btn-block"
-              data-open-form
-              aria-expanded="false"
-              aria-controls="eh-form-tray"
-              data-gtm-event="cta_sticky_download"
-              data-gtm-label="Download this resource — sticky sidebar card"
-            >
-              Download Report
-            </button>
+          <!-- Bundle CTA sidebar card — e-commerce style -->
+          <div class="eh-sidebar-card eh-sidebar-bundle">
+            <div class="eh-sidebar-bundle-header">
+              <span class="eh-sidebar-bundle-badge">
+                <svg aria-hidden="true" focusable="false" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Most popular
+              </span>
+              <h2 class="eh-sidebar-bundle-title">The Complete Hiring Toolkit</h2>
+              <p class="eh-sidebar-bundle-sub">4 resources, one free download.</p>
+            </div>
+            <ul class="eh-sidebar-bundle-list" aria-label="Toolkit contents">
+              <li class="eh-bundle-item">
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>2025 Hiring Snapshot Report</span>
+                <button type="button" class="eh-info-btn" aria-label="About the Hiring Snapshot Report" aria-expanded="false" data-info="sb-info-report">i</button>
+                <div class="eh-info-popover" id="sb-info-report" role="tooltip" hidden>Benchmark your hiring spend against 1,000+ Australian SMEs. See where you stand on budget, platforms and staff turnover.</div>
+              </li>
+              <li class="eh-bundle-item">
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Job Description Template Pack</span>
+                <button type="button" class="eh-info-btn" aria-label="About the Job Description Template Pack" aria-expanded="false" data-info="sb-info-jd">i</button>
+                <div class="eh-info-popover" id="sb-info-jd" role="tooltip" hidden>Ready-to-edit templates for your most-hired roles. Cut writing time and publish compelling job ads faster.</div>
+              </li>
+              <li class="eh-bundle-item">
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Employment Offer Letter Template</span>
+                <button type="button" class="eh-info-btn" aria-label="About the Employment Offer Letter Template" aria-expanded="false" data-info="sb-info-offer">i</button>
+                <div class="eh-info-popover" id="sb-info-offer" role="tooltip" hidden>A professionally structured offer letter template. Just fill in the details and send.</div>
+              </li>
+              <li class="eh-bundle-item">
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Interview Question Guide</span>
+                <button type="button" class="eh-info-btn" aria-label="About the Interview Question Guide" aria-expanded="false" data-info="sb-info-interview">i</button>
+                <div class="eh-info-popover" id="sb-info-interview" role="tooltip" hidden>Structured, competency-based interview questions by role type so every interview is consistent.</div>
+              </li>
+            </ul>
+            <div class="eh-sidebar-bundle-footer">
+              <button
+                type="button"
+                class="eh-btn eh-btn-primary eh-btn-sm eh-btn-block"
+                data-open-form
+                aria-expanded="false"
+                aria-controls="eh-form-tray"
+                data-gtm-event="cta_bundle_sidebar"
+                data-gtm-label="Get the Complete Hiring Toolkit — sidebar bundle card"
+              >
+                Get the Toolkit — Free
+              </button>
+              <p class="eh-sidebar-bundle-note">All 4 resources in one download</p>
+            </div>
           </div>
 
           <!-- Related webinar — accent variant, tracked -->
@@ -194,7 +225,7 @@
             <h2 class="eh-sidebar-title">Need help?</h2>
             <p class="eh-sidebar-desc">See how Employment Hero's recruitment tools can help you hire smarter and faster.</p>
             <a
-              href="#"
+              href="https://employmenthero.com/request-a-demo/"
               class="eh-btn eh-btn-outline eh-btn-sm eh-btn-block"
               data-gtm-event="cta_book_demo"
               data-gtm-label="Need help? Book a Demo — sidebar CTA"

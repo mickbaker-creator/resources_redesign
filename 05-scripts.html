@@ -33,6 +33,7 @@
     initTracking();
     initFormTray();
     initCarousels();
+    initInfoPopovers();
   }
 
   if (document.readyState === 'loading') {
@@ -281,10 +282,14 @@
         link.disabled = true;
       });
 
-      // Update hint texts
-      var hintEmail    = document.getElementById('InstructEmail');
+      // Update hint texts (IDs follow Marketo's Instruct{FieldId} pattern)
+      var hintEmail     = document.getElementById('InstructEmail');
+      var hintCompany   = document.getElementById('InstructCompany');
+      var hintIndustry  = document.getElementById('InstructIndustry');
       var hintEmployees = document.getElementById('InstructNumberOfEmployees');
-      if (hintEmail) hintEmail.textContent = 'This lets us send important updates related to your enquiry.';
+      if (hintEmail)     hintEmail.textContent     = 'This lets us send important updates related to your enquiry.';
+      if (hintCompany)   hintCompany.textContent   = 'This helps us understand your business and industry better.';
+      if (hintIndustry)  hintIndustry.textContent  = 'This helps us understand your business and industry better.';
       if (hintEmployees) hintEmployees.textContent = 'This helps us recommend the right solutions and resources.';
 
       // Country placeholder option
@@ -308,6 +313,9 @@
       var btnRow  = formEl.querySelector('.mktoButtonRow');
       var submitBtn = btnRow ? btnRow.querySelector('.mktoButton') : null;
       if (submitBtn) submitBtn.textContent = 'Download now';
+      // Re-associate the button with the form after it gets moved outside <form>.
+      // Without this, the button has no form owner and submit never fires.
+      if (submitBtn) submitBtn.setAttribute('form', 'mktoForm_1737');
 
       // Move submit button row to sticky footer
       if (tray) {
@@ -322,7 +330,7 @@
         }
       }
 
-      // Auto-scroll to next empty field after filling each field
+      // Green tick + auto-scroll: runs on blur (text) / change (select)
       var scrollBody = tray ? tray.querySelector('.eh-form-body') : null;
       var allFields  = Array.from(formEl.querySelectorAll(
         'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
@@ -330,6 +338,13 @@
       allFields.forEach(function (field, index) {
         var evt = field.tagName === 'SELECT' ? 'change' : 'blur';
         field.addEventListener(evt, function () {
+          // Apply / remove green tick class based on whether field has a value
+          if (field.value) {
+            field.classList.add('mktoValid');
+          } else {
+            field.classList.remove('mktoValid');
+          }
+          // Auto-scroll to next empty field
           if (!field.value) return;
           var next = null;
           for (var i = index + 1; i < allFields.length; i++) {
@@ -364,6 +379,46 @@
     initMarketoForm();
   } else {
     window.addEventListener('load', initMarketoForm);
+  }
+
+  // ============================================================
+  // BUNDLE INFO POPOVERS
+  // Small tooltip panels triggered by (i) buttons on bundle list items.
+  // Closes on outside click, Escape key, or opening another popover.
+  // ============================================================
+  function initInfoPopovers() {
+    var btns = document.querySelectorAll('[data-info]');
+    if (!btns.length) return;
+
+    function closeAllPopovers() {
+      document.querySelectorAll('.eh-info-popover').forEach(function (p) {
+        p.hidden = true;
+      });
+      document.querySelectorAll('[data-info]').forEach(function (b) {
+        b.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    btns.forEach(function (btn) {
+      var popoverId = btn.getAttribute('data-info');
+      var popover   = popoverId ? document.getElementById(popoverId) : null;
+      if (!popover) return;
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = !popover.hidden;
+        closeAllPopovers();
+        if (!isOpen) {
+          popover.hidden = false;
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    document.addEventListener('click', closeAllPopovers);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAllPopovers();
+    });
   }
 
   // ============================================================
