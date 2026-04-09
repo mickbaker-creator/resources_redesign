@@ -1,0 +1,222 @@
+<!--
+  RESOURCE TEMPLATE — Scripts (Block 5 of 5)
+  ═══════════════════════════════════════════
+  WordPress: Paste as the LAST Custom HTML block on the page,
+  after all other resource template blocks.
+
+  Handles:
+  · Form tray open / close with focus management + focus trap
+  · ARIA state (aria-expanded, aria-hidden) on triggers + tray
+  · Image preview carousel with keyboard + ARIA support
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ──────────────────────────────────────────────────────────
+     Initialise once the DOM is ready
+  ────────────────────────────────────────────────────────── */
+  function init() {
+    initFormTray();
+    initCarousels();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     FORM TRAY
+     — Opens as a slide-in dialog with a backdrop overlay
+     — Moves focus into the tray on open; returns it on close
+     — Traps focus inside the tray while it is open
+     — Closes on backdrop click or Escape key
+  ══════════════════════════════════════════════════════════ */
+  function initFormTray() {
+    var tray    = document.getElementById('eh-form-tray');
+    var overlay = document.getElementById('eh-form-overlay');
+
+    if (!tray || !overlay) return;
+
+    var openButtons  = document.querySelectorAll('[data-open-form]');
+    var closeButtons = document.querySelectorAll('[data-close-form]');
+    var lastFocused  = null;
+
+    /* ── Open ── */
+    function openTray(triggerEl) {
+      lastFocused = triggerEl || document.activeElement;
+
+      tray.classList.add('open');
+      overlay.classList.add('open');
+
+      tray.removeAttribute('aria-hidden');
+      overlay.setAttribute('aria-hidden', 'true'); /* backdrop is decorative */
+
+      document.body.style.overflow = 'hidden';
+
+      // Update all trigger buttons
+      openButtons.forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'true');
+      });
+
+      // Move focus to the first focusable element inside the tray
+      requestAnimationFrame(function () {
+        var firstFocusable = getFirstFocusable(tray);
+        if (firstFocusable) firstFocusable.focus();
+      });
+
+      // Activate focus trap
+      document.addEventListener('keydown', handleTrapFocus);
+    }
+
+    /* ── Close ── */
+    function closeTray() {
+      tray.classList.remove('open');
+      overlay.classList.remove('open');
+
+      tray.setAttribute('aria-hidden', 'true');
+
+      document.body.style.overflow = '';
+
+      // Update all trigger buttons
+      openButtons.forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+
+      // Deactivate focus trap
+      document.removeEventListener('keydown', handleTrapFocus);
+
+      // Return focus to the element that opened the tray
+      if (lastFocused && typeof lastFocused.focus === 'function') {
+        lastFocused.focus();
+        lastFocused = null;
+      }
+    }
+
+    /* ── Focus trap ── */
+    function handleTrapFocus(e) {
+      if (e.key !== 'Tab') {
+        // Also close on Escape
+        if (e.key === 'Escape') closeTray();
+        return;
+      }
+
+      var focusableEls = getFocusable(tray);
+      if (!focusableEls.length) return;
+
+      var first = focusableEls[0];
+      var last  = focusableEls[focusableEls.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    /* ── Wire up events ── */
+    openButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () { openTray(btn); });
+    });
+
+    closeButtons.forEach(function (btn) {
+      btn.addEventListener('click', closeTray);
+    });
+
+    overlay.addEventListener('click', closeTray);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     IMAGE PREVIEW CAROUSEL
+     — Syncs main image, thumbnail state, and counter
+     — Updates aria-pressed on thumbs, aria-label on main image
+  ══════════════════════════════════════════════════════════ */
+  function initCarousels() {
+    var carousels = document.querySelectorAll('[data-carousel]');
+
+    carousels.forEach(function (carousel) {
+      var mainImg  = carousel.querySelector('[data-carousel-img]');
+      var thumbs   = carousel.querySelectorAll('[data-carousel-thumb]');
+      var prevBtn  = carousel.querySelector('[data-carousel-prev]');
+      var nextBtn  = carousel.querySelector('[data-carousel-next]');
+      var counter  = carousel.querySelector('[data-carousel-counter]');
+
+      if (!mainImg || !thumbs.length) return;
+
+      var currentIndex = 0;
+
+      // Build full-size image src list from thumbnail srcs
+      var images = Array.from(thumbs).map(function (thumb) {
+        var img = thumb.querySelector('img');
+        if (!img) return '';
+        return img.src
+          .replace(/w=\d+/, 'w=600')
+          .replace(/h=\d+/, 'h=800');
+      }).filter(Boolean);
+
+      if (!images.length) return;
+
+      /* ── Update carousel to a given index ── */
+      function goTo(index) {
+        currentIndex = (index + images.length) % images.length;
+
+        mainImg.src = images[currentIndex];
+        mainImg.alt = 'Factsheet preview \u2014 page ' + (currentIndex + 1) + ' of ' + images.length;
+
+        thumbs.forEach(function (thumb, i) {
+          var isActive = i === currentIndex;
+          thumb.classList.toggle('active', isActive);
+          thumb.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        if (counter) {
+          counter.textContent = (currentIndex + 1) + ' / ' + images.length;
+        }
+      }
+
+      /* ── Thumb clicks ── */
+      thumbs.forEach(function (thumb, index) {
+        thumb.addEventListener('click', function () { goTo(index); });
+      });
+
+      /* ── Prev / next buttons ── */
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () { goTo(currentIndex - 1); });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () { goTo(currentIndex + 1); });
+      }
+    });
+  }
+
+  /* ──────────────────────────────────────────────────────────
+     HELPERS
+  ────────────────────────────────────────────────────────── */
+  var FOCUSABLE_SELECTOR = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+  ].join(', ');
+
+  function getFocusable(container) {
+    return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR))
+      .filter(function (el) { return !el.closest('[hidden]'); });
+  }
+
+  function getFirstFocusable(container) {
+    return getFocusable(container)[0] || null;
+  }
+
+})();
+</script>
