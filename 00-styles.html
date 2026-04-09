@@ -795,12 +795,13 @@
 /* Bundle sidebar card — e-commerce style with purple header */
 .eh-sidebar-bundle {
   padding: 0;
-  overflow: hidden;
+  overflow: visible; /* must NOT be hidden — popovers are absolutely positioned children */
 }
 
 .eh-sidebar-bundle-header {
   background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%);
   padding: var(--wp--preset--spacing--5);
+  border-radius: calc(var(--rt-radius) - 1px) calc(var(--rt-radius) - 1px) 0 0;
 }
 
 .eh-sidebar-bundle-badge {
