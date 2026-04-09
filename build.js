@@ -19,36 +19,11 @@ const fs   = require('fs');
 const path = require('path');
 
 /* ── Preview image substitutions ───────────────────────────────
-   Left side:  WP media paths used in the block files (production)
-   Right side: local /images/* paths served from dist/ (Vercel preview)
-
-   To update carousel images: save the report page screenshots to the
-   images/ folder at the repo root using the filenames below, then
-   push — Vercel will pick them up on next deploy.
-
-   Thumbnail and full-size share the same source file; the carousel CSS
-   handles sizing so no separate crop is needed for the preview.
+   Carousel images now use absolute employmenthero.com URLs directly
+   in 01-hero.html — no substitution needed. This map is kept for
+   any other WP placeholder paths that may be added in future blocks.
 ─────────────────────────────────────────────────────────────── */
-const IMAGE_SUBS = {
-  /* Full-size */
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-cover.jpg':
-    '/images/hiring-snapshot-report-cover.jpg',
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-key-findings.jpg':
-    '/images/hiring-snapshot-report-key-findings.jpg',
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-chart.jpg':
-    '/images/hiring-snapshot-report-chart.jpg',
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-wrap-up.jpg':
-    '/images/hiring-snapshot-report-wrap-up.jpg',
-  /* Thumbnails (same source file — CSS handles the smaller display size) */
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-cover-thumb.jpg':
-    '/images/hiring-snapshot-report-cover.jpg',
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-key-findings-thumb.jpg':
-    '/images/hiring-snapshot-report-key-findings.jpg',
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-chart-thumb.jpg':
-    '/images/hiring-snapshot-report-chart.jpg',
-  '/wp-content/uploads/2025/05/hiring-snapshot-report-wrap-up-thumb.jpg':
-    '/images/hiring-snapshot-report-wrap-up.jpg',
-};
+const IMAGE_SUBS = {};
 
 /* ── Block files (in render order) ─────────────────────────── */
 const BLOCKS = [
@@ -248,7 +223,7 @@ const html = [
   '  <meta name="description" content="Download the 2025 Hiring Snapshot Report: current trends in recruitment across Australian SMEs. Based on a survey of 1,000+ SME leaders.">',
   '  <meta property="og:title" content="2025 Hiring Snapshot Report: Current Trends in Recruitment">',
   '  <meta property="og:description" content="Discover what the data says about hiring costs, platforms, and staff retention across Australian SMEs in 2025.">',
-  '  <meta property="og:image" content="/images/hiring-snapshot-report-cover.jpg">',
+  '  <meta property="og:image" content="https://employmenthero.com/wp-content/uploads/2026/04/1775706956412-9368b2d3-cb51-46e9-9482-49abc9efbd08_1.png">',
   '  <meta property="og:type" content="article">',
   '  <title>2025 Hiring Snapshot Report: Current Trends in Recruitment | Employment Hero</title>',
   '  <style>' + WP_TOKEN_FALLBACKS + styles + '</style>',
