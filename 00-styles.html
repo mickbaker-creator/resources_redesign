@@ -1259,25 +1259,43 @@
 }
 
 /* ============================================================
-   MARKETO FORM OVERRIDES
-   Resets Marketo's inline-width, table-based layout and
-   applies the design token system to the embedded form.
-   All overrides are scoped to #eh-form-tray to avoid
-   affecting any other Marketo forms on the same page.
+   MARKETO FORM OVERRIDES — rewritten from actual form HTML
+   Scoped to #eh-form-tray. Based on Employment Hero's own
+   form-v2-violet-box-shadow-pattern component.
+
+   Key facts about Marketo form 1737's HTML structure:
+   · Each field is in its own .mktoFormRow (single column)
+   · .mktoAsterix is a <div> inside .mktoLabel
+   · Labels are hidden; placeholder text provides visual labelling
+   · Hint text uses .mktoInstruction (not .mktoHint)
+   · Submit is inside .eh_marketo_form-button-container > .mktoButton
+   · Spacers: .mktoOffset, .mktoGutter, .mktoClear — all hidden
    ============================================================ */
 
-/* Base reset */
+/* ── Box-sizing reset ──────────────────────────────────────── */
 #eh-form-tray .mktoForm,
 #eh-form-tray .mktoForm * {
   box-sizing: border-box;
 }
 
+/* ── Form wrapper ──────────────────────────────────────────── */
 #eh-form-tray .mktoForm {
   width: 100% !important;
+  padding: 0 !important;
   font-family: var(--wp--preset--font-family--default) !important;
+  font-size: var(--wp--preset--font-size--sm) !important;
 }
 
-/* Remove Marketo's default fieldset border/padding */
+/* ── Spacers / clearfixes Marketo injects — remove ─────────── */
+#eh-form-tray .mktoOffset,
+#eh-form-tray .mktoGutter,
+#eh-form-tray .mktoClear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* ── Fieldset (sometimes wraps groups) ─────────────────────── */
 #eh-form-tray .mktoForm fieldset {
   border: none !important;
   padding: 0 !important;
@@ -1285,96 +1303,85 @@
   min-width: 0 !important;
 }
 
-/* Row layout — 2 columns */
+/* ── Rows — single column, spaced ──────────────────────────── */
 #eh-form-tray .mktoFormRow {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: var(--wp--preset--spacing--3) !important;
-  margin-bottom: var(--wp--preset--spacing--3) !important;
-  float: none !important;
-  width: 100% !important;
-}
-
-/* Single-column rows */
-#eh-form-tray .mktoFormRow:has(.mktoFormCol:only-child) {
-  grid-template-columns: 1fr !important;
-}
-
-/* Column */
-#eh-form-tray .mktoFormCol {
-  float: none !important;
-  width: auto !important;
-  min-width: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* Field wrap */
-#eh-form-tray .mktoFieldWrap {
-  float: none !important;
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: var(--wp--preset--spacing--1) !important;
-}
-
-/* Labels */
-#eh-form-tray .mktoLabel {
-  float: none !important;
-  width: auto !important;
-  font-size: var(--wp--preset--font-size--sm) !important;
-  font-weight: 500 !important;
-  color: var(--wp--preset--color--off-black) !important;
-  padding-right: 0 !important;
-  padding-bottom: 0 !important;
-  line-height: 1.4 !important;
   display: block !important;
+  float: none !important;
+  width: 100% !important;
+  margin-bottom: var(--wp--preset--spacing--4) !important;
 }
 
-/* Required asterisk — hide Marketo's element (it renders as a sibling of the
-   label so it floats onto its own line in our flex layout). Instead, inject
-   " *" via CSS ::after on the label so it always sits inline after the text. */
-#eh-form-tray .mktoAsterix {
+/* ── Columns ───────────────────────────────────────────────── */
+#eh-form-tray .mktoFormCol,
+#eh-form-tray .mktoFieldDescriptor {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ── Field wrap ────────────────────────────────────────────── */
+#eh-form-tray .mktoFieldWrap {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+}
+
+/* ── Labels — hidden visually; placeholder provides the label.
+      Accessibility is maintained via aria-labelledby on each input.
+      Exception: checkbox/radio labels must stay visible (see below). ── */
+#eh-form-tray .mktoLabel {
   display: none !important;
 }
-#eh-form-tray .mktoRequiredField .mktoLabel::after {
-  content: ' *';
-  color: var(--wp--preset--color--error-600);
-  font-weight: 500;
-}
 
-/* Text inputs + selects — target both .mktoField class and native elements
-   (Marketo doesn't always add .mktoField to every input type) */
-#eh-form-tray .mktoField:not([type="checkbox"]):not([type="radio"]),
-#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+/* ── Inputs, selects, textareas ────────────────────────────── */
+#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
 #eh-form-tray select,
 #eh-form-tray textarea {
+  display: block !important;
   width: 100% !important;
-  padding: 0.75rem 0.875rem !important;
+  padding: 0.8125rem 1rem !important;
   border: 1px solid var(--wp--preset--color--neutral-200) !important;
-  border-radius: var(--rt-radius-sm) !important;
-  font-size: var(--wp--preset--font-size--sm) !important;
-  font-family: var(--wp--preset--font-family--default) !important;
-  color: var(--wp--preset--color--off-black) !important;
+  border-radius: 0.375rem !important;
   background-color: var(--wp--preset--color--white) !important;
+  color: var(--wp--preset--color--off-black) !important;
+  font-family: var(--wp--preset--font-family--default) !important;
+  font-size: var(--wp--preset--font-size--sm) !important;
+  line-height: 1.5 !important;
+  height: auto !important;
   box-shadow: none !important;
   appearance: none !important;
   -webkit-appearance: none !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-  height: auto !important;
-  line-height: 1.5 !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  margin: 0 !important;
 }
 
-#eh-form-tray .mktoField:not([type="checkbox"]):not([type="radio"]):focus,
-#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):focus,
+/* Placeholder colour */
+#eh-form-tray input::placeholder,
+#eh-form-tray textarea::placeholder {
+  color: var(--wp--preset--color--neutral-400) !important;
+  opacity: 1 !important;
+}
+
+/* Focus ring */
+#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus,
 #eh-form-tray select:focus,
 #eh-form-tray textarea:focus {
   outline: none !important;
-  border-color: var(--wp--preset--color--violet-500) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--violet-500) 10%, transparent) !important;
+  border-color: var(--wp--preset--color--light-violet-500) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--light-violet-500) 15%, transparent) !important;
 }
 
-/* Autofill background override — Chrome/Safari inject a blue tint on
-   autofilled fields; the only reliable override is a large inset box-shadow */
+/* Validation — invalid state */
+#eh-form-tray input.mktoInvalid,
+#eh-form-tray select.mktoInvalid,
+#eh-form-tray textarea.mktoInvalid {
+  border-color: var(--wp--preset--color--error-600) !important;
+}
+
+/* Autofill override (Chrome/Safari inject a blue background) */
 #eh-form-tray input:-webkit-autofill,
 #eh-form-tray input:-webkit-autofill:hover,
 #eh-form-tray input:-webkit-autofill:focus {
@@ -1383,28 +1390,25 @@
   transition: background-color 5000s ease-in-out 0s !important;
 }
 
-/* Select arrow */
-#eh-form-tray select.mktoField,
+/* Select dropdown arrow */
 #eh-form-tray select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
-  background-position: right 0.75rem center !important;
+  background-position: right 0.875rem center !important;
   padding-right: 2.5rem !important;
+  cursor: pointer !important;
 }
 
-/* Hint / helper text */
-#eh-form-tray .mktoHint {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 0.375rem !important;
+/* ── Instruction / hint text (.mktoInstruction) ─────────────── */
+#eh-form-tray .mktoInstruction {
+  display: block !important;
   font-size: var(--wp--preset--font-size--xs) !important;
   color: var(--wp--preset--color--neutral-500) !important;
-  margin-top: var(--wp--preset--spacing--1) !important;
-  font-style: normal !important;
   line-height: 1.4 !important;
+  margin-top: var(--wp--preset--spacing--1) !important;
 }
 
-/* Validation errors */
+/* ── Validation errors ──────────────────────────────────────── */
 #eh-form-tray .mktoError,
 #eh-form-tray .mktoErrorMsg {
   font-size: var(--wp--preset--font-size--xs) !important;
@@ -1421,32 +1425,45 @@
   display: none !important;
 }
 
-/* Checkbox / radio fields */
+/* ── Checkbox / radio ───────────────────────────────────────── */
 #eh-form-tray .mktoLogicalField {
   display: flex !important;
   align-items: flex-start !important;
   gap: 0.625rem !important;
 }
 
-#eh-form-tray .mktoField[type="checkbox"],
-#eh-form-tray .mktoField[type="radio"] {
+#eh-form-tray input[type="checkbox"],
+#eh-form-tray input[type="radio"] {
   width: 1rem !important;
   height: 1rem !important;
-  margin-top: 2px !important;
+  margin-top: 0.2rem !important;
   flex-shrink: 0 !important;
   accent-color: var(--wp--preset--color--violet-500) !important;
+  cursor: pointer !important;
 }
 
-#eh-form-tray .mktoLogicalField .mktoLabel {
+/* Checkbox labels — must be visible (override the global label hide) */
+#eh-form-tray .mktoLogicalField label,
+#eh-form-tray .mktoCheckboxList label {
+  display: block !important;
+  font-size: var(--wp--preset--font-size--xs) !important;
   font-weight: 400 !important;
   color: var(--wp--preset--color--dark-grey) !important;
+  line-height: 1.5 !important;
+  cursor: pointer !important;
 }
 
-/* Button row */
+#eh-form-tray .mktoLogicalField label a {
+  color: var(--wp--preset--color--violet-500) !important;
+  text-decoration: underline !important;
+}
+
+/* ── Button row ─────────────────────────────────────────────── */
 #eh-form-tray .mktoButtonRow {
   display: block !important;
   width: 100% !important;
-  margin-top: var(--wp--preset--spacing--3) !important;
+  margin-top: var(--wp--preset--spacing--5) !important;
+  margin-bottom: 0 !important;
 }
 
 #eh-form-tray .mktoButtonWrap {
@@ -1455,13 +1472,21 @@
   margin: 0 !important;
 }
 
-/* Submit button — matches .eh-btn-primary spec */
-#eh-form-tray .mktoButton {
+/* EH's button container div that wraps the submit button */
+#eh-form-tray .eh_marketo_form-button-container {
+  display: block !important;
   width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: var(--wp--preset--spacing--2) !important;
+}
+
+/* Back button (multi-step forms) — keep hidden for single-step */
+#eh-form-tray .eh_marketo_form-back-button {
+  display: none !important;
+}
+
+/* ── Submit button ──────────────────────────────────────────── */
+#eh-form-tray .mktoButton {
+  display: block !important;
+  width: 100% !important;
   padding: 0.875rem var(--wp--preset--spacing--6) !important;
   border-radius: 2rem !important;
   border: 2px solid var(--wp--preset--color--violet-500) !important;
@@ -1470,20 +1495,36 @@
   font-family: var(--wp--preset--font-family--default) !important;
   font-size: var(--wp--preset--font-size--md) !important;
   font-weight: 600 !important;
-  line-height: 1 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
   cursor: pointer !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease !important;
   text-shadow: none !important;
   box-shadow: none !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+  margin: 0 !important;
 }
 
 #eh-form-tray .mktoButton:hover,
 #eh-form-tray .mktoButton:focus-visible {
   background-color: var(--wp--preset--color--deep-violet) !important;
   border-color: var(--wp--preset--color--deep-violet) !important;
+  outline: none !important;
 }
 
-/* Form loading state */
+/* ── Form tray body: apply EH's form-v2-violet-box-shadow-pattern ── */
+#eh-form-tray .eh-form-body {
+  background: var(--wp--preset--color--white);
+  border: 1px solid var(--wp--preset--color--light-violet-500);
+  border-radius: var(--wp--preset--spacing--5);
+  box-shadow: 0 6px 40px 0 #e6d5fe, 0 -1px 3px 0 rgba(40, 5, 65, 0.05);
+  padding: var(--wp--preset--spacing--6);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Form loading state ─────────────────────────────────────── */
 #eh-form-tray .eh-form-loading {
   display: flex;
   flex-direction: column;
@@ -1507,12 +1548,5 @@
 
 @keyframes eh-spin {
   to { transform: rotate(360deg); }
-}
-
-/* Responsive — tablet and below: single column */
-@media (max-width: 768px) {
-  #eh-form-tray .mktoFormRow {
-    grid-template-columns: 1fr !important;
-  }
 }
 </style>
