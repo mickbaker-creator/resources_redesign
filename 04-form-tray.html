@@ -140,6 +140,14 @@
           gdprRow.style.display = 'none';
         }
 
+        // ── Marketing opt-in checkbox: hide row ───────────────────
+        // Disclaimer statement covers consent; hide the marketing
+        // checkbox row entirely to keep the form clean.
+        var marketingCheckbox = formEl.querySelector('input[name="marketingOptInOriginallyConsented"]');
+        if (marketingCheckbox) {
+          marketingCheckbox.closest('.mktoFormRow').style.display = 'none';
+        }
+
         // ── Country: inject a placeholder option ──────────────────
         // The Country select has no empty default option, so the field
         // appears blank. Add a disabled placeholder so it reads "Country"
