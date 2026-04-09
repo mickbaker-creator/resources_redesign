@@ -11,8 +11,19 @@
   Requires: 00-styles.html on the same page.
 ═════════════════════════════════════════════════════ -->
 
-<!-- Marketo forms script — loads once, used by the form below -->
-<script src="https://hr.employmenthero.io/js/forms2/js/forms2.min.js"></script>
+<!-- Marketo forms2 — loaded dynamically to avoid WP plugin deferral/stripping -->
+<script>
+(function () {
+  var s = document.createElement('script');
+  s.src = 'https://hr.employmenthero.io/js/forms2/js/forms2.min.js';
+  s.async = false; /* preserve execution order */
+  s.onerror = function () {
+    console.error('[EH Form] Failed to load Marketo script. Check that https://hr.employmenthero.io is allowed by your site\'s Content Security Policy.');
+    window.__mktoScriptFailed = true;
+  };
+  (document.head || document.body).appendChild(s);
+})();
+</script>
 
 <div class="eh-resource-landing">
 
@@ -94,9 +105,15 @@
   }
 
   function initMarketoForm() {
+    if (window.__mktoScriptFailed) {
+      showFormError();
+      return;
+    }
+
     if (typeof MktoForms2 === 'undefined') {
       mktoRetries++;
       if (mktoRetries >= MKTO_MAX_RETRIES) {
+        console.error('[EH Form] MktoForms2 still undefined after ' + MKTO_MAX_RETRIES + ' retries.');
         showFormError();
         return;
       }
