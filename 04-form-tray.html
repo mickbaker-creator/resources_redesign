@@ -94,11 +94,29 @@
       '387-SZZ-170',
       1737,
       function (form) {
-        // Hide loading indicator once the form renders
+        var formEl = form.getFormElem()[0];
+
+        // ── Strip Marketo's injected inline styles ──────────────────
+        // Marketo adds style="width:Xpx" and similar inline attributes
+        // to almost every element, which override CSS rules even with
+        // !important. Removing them lets our stylesheet take full control.
+        formEl.removeAttribute('style');
+        formEl.querySelectorAll('[style]').forEach(function (el) {
+          el.removeAttribute('style');
+        });
+
+        // ── Disable Marketo's own stylesheet ────────────────────────
+        // forms2.min.js injects a <link> to forms2BaseStyle.css.
+        // Disabling it prevents their default styles from competing.
+        document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
+          link.disabled = true;
+        });
+
+        // ── Hide loading indicator ───────────────────────────────────
         var loader = document.getElementById('eh-form-loading');
         if (loader) loader.style.display = 'none';
 
-        // Redirect on successful submission
+        // ── Redirect on successful submission ───────────────────────
         form.onSuccess(function () {
           window.location.href = REDIRECT_URL;
           return false; // Prevent Marketo's default follow-up URL
