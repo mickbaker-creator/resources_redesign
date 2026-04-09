@@ -1257,4 +1257,235 @@
     justify-content: center;
   }
 }
+
+/* ============================================================
+   MARKETO FORM OVERRIDES
+   Resets Marketo's inline-width, table-based layout and
+   applies the design token system to the embedded form.
+   All overrides are scoped to #eh-form-tray to avoid
+   affecting any other Marketo forms on the same page.
+   ============================================================ */
+
+/* Base reset */
+#eh-form-tray .mktoForm,
+#eh-form-tray .mktoForm * {
+  box-sizing: border-box;
+}
+
+#eh-form-tray .mktoForm {
+  width: 100% !important;
+  font-family: var(--wp--preset--font-family--default) !important;
+}
+
+/* Remove Marketo's default fieldset border/padding */
+#eh-form-tray .mktoForm fieldset {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+
+/* Row layout — 2 columns */
+#eh-form-tray .mktoFormRow {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: var(--wp--preset--spacing--3) !important;
+  margin-bottom: var(--wp--preset--spacing--3) !important;
+  float: none !important;
+  width: 100% !important;
+}
+
+/* Single-column rows */
+#eh-form-tray .mktoFormRow:has(.mktoFormCol:only-child) {
+  grid-template-columns: 1fr !important;
+}
+
+/* Column */
+#eh-form-tray .mktoFormCol {
+  float: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Field wrap */
+#eh-form-tray .mktoFieldWrap {
+  float: none !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--wp--preset--spacing--1) !important;
+}
+
+/* Labels */
+#eh-form-tray .mktoLabel {
+  float: none !important;
+  width: auto !important;
+  font-size: var(--wp--preset--font-size--sm) !important;
+  font-weight: 500 !important;
+  color: var(--wp--preset--color--off-black) !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Required asterisk */
+#eh-form-tray .mktoAsterix {
+  color: var(--wp--preset--color--error-600) !important;
+  margin-left: 2px !important;
+}
+
+/* Text inputs + selects */
+#eh-form-tray .mktoField:not([type="checkbox"]):not([type="radio"]) {
+  width: 100% !important;
+  padding: 0.75rem 0.875rem !important;
+  border: 1px solid var(--wp--preset--color--neutral-200) !important;
+  border-radius: var(--rt-radius-sm) !important;
+  font-size: var(--wp--preset--font-size--sm) !important;
+  font-family: var(--wp--preset--font-family--default) !important;
+  color: var(--wp--preset--color--off-black) !important;
+  background-color: var(--wp--preset--color--white) !important;
+  box-shadow: none !important;
+  appearance: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  height: auto !important;
+}
+
+#eh-form-tray .mktoField:not([type="checkbox"]):not([type="radio"]):focus {
+  outline: none !important;
+  border-color: var(--wp--preset--color--violet-500) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--violet-500) 10%, transparent) !important;
+}
+
+/* Select arrow */
+#eh-form-tray select.mktoField {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 2.5rem !important;
+}
+
+/* Hint / helper text */
+#eh-form-tray .mktoHint {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.375rem !important;
+  font-size: var(--wp--preset--font-size--xs) !important;
+  color: var(--wp--preset--color--neutral-500) !important;
+  margin-top: var(--wp--preset--spacing--1) !important;
+  font-style: normal !important;
+  line-height: 1.4 !important;
+}
+
+/* Validation errors */
+#eh-form-tray .mktoError,
+#eh-form-tray .mktoErrorMsg {
+  font-size: var(--wp--preset--font-size--xs) !important;
+  color: var(--wp--preset--color--error-600) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+  margin-top: var(--wp--preset--spacing--1) !important;
+}
+
+#eh-form-tray .mktoError .mktoArrow {
+  display: none !important;
+}
+
+/* Checkbox / radio fields */
+#eh-form-tray .mktoLogicalField {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.625rem !important;
+}
+
+#eh-form-tray .mktoField[type="checkbox"],
+#eh-form-tray .mktoField[type="radio"] {
+  width: 1rem !important;
+  height: 1rem !important;
+  margin-top: 2px !important;
+  flex-shrink: 0 !important;
+  accent-color: var(--wp--preset--color--violet-500) !important;
+}
+
+#eh-form-tray .mktoLogicalField .mktoLabel {
+  font-weight: 400 !important;
+  color: var(--wp--preset--color--dark-grey) !important;
+}
+
+/* Button row */
+#eh-form-tray .mktoButtonRow {
+  display: block !important;
+  width: 100% !important;
+  margin-top: var(--wp--preset--spacing--3) !important;
+}
+
+#eh-form-tray .mktoButtonWrap {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* Submit button — matches .eh-btn-primary spec */
+#eh-form-tray .mktoButton {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--wp--preset--spacing--2) !important;
+  padding: 0.875rem var(--wp--preset--spacing--6) !important;
+  border-radius: 2rem !important;
+  border: 2px solid var(--wp--preset--color--violet-500) !important;
+  background-color: var(--wp--preset--color--violet-500) !important;
+  color: var(--wp--preset--color--white) !important;
+  font-family: var(--wp--preset--font-family--default) !important;
+  font-size: var(--wp--preset--font-size--md) !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+#eh-form-tray .mktoButton:hover,
+#eh-form-tray .mktoButton:focus-visible {
+  background-color: var(--wp--preset--color--deep-violet) !important;
+  border-color: var(--wp--preset--color--deep-violet) !important;
+}
+
+/* Form loading state */
+#eh-form-tray .eh-form-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--wp--preset--spacing--12) var(--wp--preset--spacing--6);
+  gap: var(--wp--preset--spacing--4);
+  color: var(--wp--preset--color--neutral-500);
+  font-size: var(--wp--preset--font-size--sm);
+}
+
+#eh-form-tray .eh-form-loading::before {
+  content: '';
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--wp--preset--color--neutral-200);
+  border-top-color: var(--wp--preset--color--violet-500);
+  border-radius: 50%;
+  animation: eh-spin 0.8s linear infinite;
+}
+
+@keyframes eh-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive — tablet and below: single column */
+@media (max-width: 768px) {
+  #eh-form-tray .mktoFormRow {
+    grid-template-columns: 1fr !important;
+  }
+}
 </style>

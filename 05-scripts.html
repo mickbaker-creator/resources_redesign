@@ -8,15 +8,27 @@
   · Form tray open / close with focus management + focus trap
   · ARIA state (aria-expanded, aria-hidden) on triggers + tray
   · Image preview carousel with keyboard + ARIA support
+  · dataLayer tracking for all tagged interactions
+
+  CONFIGURE: Update RESOURCE_NAME and RESOURCE_TYPE below
+  to match the specific resource on this page.
 ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
   'use strict';
 
   /* ──────────────────────────────────────────────────────────
+     RESOURCE METADATA
+     Update these values for each resource page.
+  ────────────────────────────────────────────────────────── */
+  var RESOURCE_NAME = '2025 Hiring Snapshot Report: Current Trends in Recruitment';
+  var RESOURCE_TYPE = 'Report';
+
+  /* ──────────────────────────────────────────────────────────
      Initialise once the DOM is ready
   ────────────────────────────────────────────────────────── */
   function init() {
+    initTracking();
     initFormTray();
     initCarousels();
   }
@@ -25,6 +37,61 @@
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     DATALAYER TRACKING
+     Uses event delegation on document so it works with
+     dynamically rendered content (e.g., Marketo form).
+
+     Tag elements with:
+       data-gtm-event="<interaction_type>"
+       data-gtm-label="<human-readable label>"
+
+     Each click fires a single 'resource_page_interaction' event
+     that can be picked up in GTM and forwarded to GA4 or any
+     other analytics destination.
+
+     dataLayer event shape:
+     {
+       event:             'resource_page_interaction',
+       interaction_type:  'carousel_next',        // from data-gtm-event
+       interaction_label: 'Preview carousel — next', // from data-gtm-label
+       resource_name:     '<RESOURCE_NAME>',
+       resource_type:     '<RESOURCE_TYPE>'
+     }
+  ══════════════════════════════════════════════════════════ */
+  function initTracking() {
+    window.dataLayer = window.dataLayer || [];
+
+    document.addEventListener('click', function (e) {
+      var tracked = e.target.closest('[data-gtm-event]');
+      if (!tracked) return;
+
+      window.dataLayer.push({
+        event:             'resource_page_interaction',
+        interaction_type:  tracked.dataset.gtmEvent  || '',
+        interaction_label: tracked.dataset.gtmLabel  || '',
+        resource_name:     RESOURCE_NAME,
+        resource_type:     RESOURCE_TYPE
+      });
+    });
+
+    /*
+      Tracked interaction types (set via data-gtm-event):
+      ──────────────────────────────────────────────────
+      carousel_prev       → Preview carousel previous arrow
+      carousel_next       → Preview carousel next arrow
+      carousel_expand     → Preview carousel expand / full-size
+      whitelabel_pill     → "Whitelabel available" pill (hero)
+      cta_hero_secondary  → Hero secondary CTA (e.g. "Get the Hiring Toolkit")
+      cta_sticky_download → "Download this resource" sticky sidebar card
+      webinar_block       → Related webinar sidebar block
+      cta_book_demo       → "Need help? Book a Demo" sidebar CTA
+      cta_content_gate    → "Continue reading" content gate CTA
+      cta_bundle          → Bundle / toolkit CTA below article
+      related_card        → Any card in the Related Resources section
+    */
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -56,18 +123,16 @@
 
       document.body.style.overflow = 'hidden';
 
-      // Update all trigger buttons
       openButtons.forEach(function (btn) {
         btn.setAttribute('aria-expanded', 'true');
       });
 
-      // Move focus to the first focusable element inside the tray
+      // Move focus to first focusable element in the tray
       requestAnimationFrame(function () {
-        var firstFocusable = getFirstFocusable(tray);
-        if (firstFocusable) firstFocusable.focus();
+        var first = getFirstFocusable(tray);
+        if (first) first.focus();
       });
 
-      // Activate focus trap
       document.addEventListener('keydown', handleTrapFocus);
     }
 
@@ -77,18 +142,14 @@
       overlay.classList.remove('open');
 
       tray.setAttribute('aria-hidden', 'true');
-
       document.body.style.overflow = '';
 
-      // Update all trigger buttons
       openButtons.forEach(function (btn) {
         btn.setAttribute('aria-expanded', 'false');
       });
 
-      // Deactivate focus trap
       document.removeEventListener('keydown', handleTrapFocus);
 
-      // Return focus to the element that opened the tray
       if (lastFocused && typeof lastFocused.focus === 'function') {
         lastFocused.focus();
         lastFocused = null;
@@ -97,11 +158,12 @@
 
     /* ── Focus trap ── */
     function handleTrapFocus(e) {
-      if (e.key !== 'Tab') {
-        // Also close on Escape
-        if (e.key === 'Escape') closeTray();
+      if (e.key === 'Escape') {
+        closeTray();
         return;
       }
+
+      if (e.key !== 'Tab') return;
 
       var focusableEls = getFocusable(tray);
       if (!focusableEls.length) return;
@@ -137,39 +199,39 @@
   /* ══════════════════════════════════════════════════════════
      IMAGE PREVIEW CAROUSEL
      — Syncs main image, thumbnail state, and counter
-     — Updates aria-pressed on thumbs, aria-label on main image
+     — Updates aria-pressed on thumbs and alt text on main image
   ══════════════════════════════════════════════════════════ */
   function initCarousels() {
     var carousels = document.querySelectorAll('[data-carousel]');
 
     carousels.forEach(function (carousel) {
-      var mainImg  = carousel.querySelector('[data-carousel-img]');
-      var thumbs   = carousel.querySelectorAll('[data-carousel-thumb]');
-      var prevBtn  = carousel.querySelector('[data-carousel-prev]');
-      var nextBtn  = carousel.querySelector('[data-carousel-next]');
-      var counter  = carousel.querySelector('[data-carousel-counter]');
+      var mainImg = carousel.querySelector('[data-carousel-img]');
+      var thumbs  = carousel.querySelectorAll('[data-carousel-thumb]');
+      var prevBtn = carousel.querySelector('[data-carousel-prev]');
+      var nextBtn = carousel.querySelector('[data-carousel-next]');
+      var counter = carousel.querySelector('[data-carousel-counter]');
 
       if (!mainImg || !thumbs.length) return;
 
       var currentIndex = 0;
 
-      // Build full-size image src list from thumbnail srcs
+      // Derive full-size srcs from thumb srcs
+      // Thumbs use -thumb suffix; full images don't.
       var images = Array.from(thumbs).map(function (thumb) {
         var img = thumb.querySelector('img');
         if (!img) return '';
-        return img.src
-          .replace(/w=\d+/, 'w=600')
-          .replace(/h=\d+/, 'h=800');
+        return img.src.replace('-thumb', '');
       }).filter(Boolean);
 
+      // Fallback: if all thumbs share the same src pattern we keep original
       if (!images.length) return;
 
-      /* ── Update carousel to a given index ── */
+      /* ── Navigate to index ── */
       function goTo(index) {
         currentIndex = (index + images.length) % images.length;
 
         mainImg.src = images[currentIndex];
-        mainImg.alt = 'Factsheet preview \u2014 page ' + (currentIndex + 1) + ' of ' + images.length;
+        mainImg.alt = 'Report preview — page ' + (currentIndex + 1) + ' of ' + images.length;
 
         thumbs.forEach(function (thumb, i) {
           var isActive = i === currentIndex;
@@ -182,18 +244,12 @@
         }
       }
 
-      /* ── Thumb clicks ── */
-      thumbs.forEach(function (thumb, index) {
-        thumb.addEventListener('click', function () { goTo(index); });
+      thumbs.forEach(function (thumb, i) {
+        thumb.addEventListener('click', function () { goTo(i); });
       });
 
-      /* ── Prev / next buttons ── */
-      if (prevBtn) {
-        prevBtn.addEventListener('click', function () { goTo(currentIndex - 1); });
-      }
-      if (nextBtn) {
-        nextBtn.addEventListener('click', function () { goTo(currentIndex + 1); });
-      }
+      if (prevBtn) prevBtn.addEventListener('click', function () { goTo(currentIndex - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { goTo(currentIndex + 1); });
     });
   }
 

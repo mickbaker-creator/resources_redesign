@@ -1,12 +1,19 @@
 <!--
-  RESOURCE TEMPLATE — Form Slide-out Tray (Block 4 of 5)
-  ═══════════════════════════════════════════════════════
+  RESOURCE TEMPLATE — Marketo Form Tray (Block 4 of 5)
+  ═════════════════════════════════════════════════════
   WordPress: Paste as a Custom HTML block AFTER all content blocks.
-  The overlay and tray use position:fixed so DOM order doesn't
-  affect visual rendering — but they must be present in the DOM
-  before the script (05-scripts.html) runs.
+  The overlay and tray use position:fixed so DOM position doesn't
+  affect visual rendering, but they must be present before 05-scripts.html.
+
+  MARKETO FORM: ID 1737 | Account: 387-SZZ-170 | Instance: hr.employmenthero.io
+  On successful submission, the user is redirected to the thank-you page below.
+
   Requires: 00-styles.html on the same page.
-═══════════════════════════════════════════════════════ -->
+═════════════════════════════════════════════════════ -->
+
+<!-- Marketo forms script — loads once, used by the form below -->
+<script src="//hr.employmenthero.io/js/forms2/js/forms2.min.js"></script>
+
 <div class="eh-resource-landing">
 
   <!-- Backdrop overlay (click to close) -->
@@ -26,7 +33,7 @@
     aria-hidden="true"
   >
 
-    <!-- Tray header (sticky) -->
+    <!-- Sticky tray header -->
     <div class="eh-form-header">
       <div class="eh-form-header-left">
         <div class="eh-form-icon" aria-hidden="true">
@@ -56,162 +63,55 @@
     <div class="eh-form-body">
       <p class="eh-form-desc">Fill in your details to get instant access to this resource.</p>
 
-      <form id="eh-download-form" novalidate>
+      <!-- Loading indicator — hidden once Marketo form renders -->
+      <div class="eh-form-loading" id="eh-form-loading" aria-live="polite" aria-label="Loading form">
+        Loading form…
+      </div>
 
-        <!-- Name row -->
-        <div class="eh-form-section-grid">
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-first-name">
-              First Name <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="text"
-              id="eh-first-name"
-              class="eh-form-input"
-              placeholder="e.g. Jane"
-              required
-              autocomplete="given-name"
-            >
-          </div>
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-last-name">
-              Last Name <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="text"
-              id="eh-last-name"
-              class="eh-form-input"
-              placeholder="e.g. Smith"
-              required
-              autocomplete="family-name"
-            >
-          </div>
-        </div>
+      <!-- Marketo form target — Marketo populates this element -->
+      <form id="mktoForm_1737"></form>
+    </div>
 
-        <!-- Contact row -->
-        <div class="eh-form-section-grid">
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-email">
-              Work Email <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="email"
-              id="eh-email"
-              class="eh-form-input"
-              placeholder="you@company.com"
-              required
-              autocomplete="email"
-            >
-            <p class="eh-form-hint">
-              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="16" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12.01" y2="8"/>
-              </svg>
-              We'll send the resource to this address
-            </p>
-          </div>
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-phone">
-              Work Phone <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="tel"
-              id="eh-phone"
-              class="eh-form-input"
-              placeholder="+61 400 000 000"
-              required
-              autocomplete="tel"
-            >
-          </div>
-        </div>
-
-        <!-- Company row -->
-        <div class="eh-form-section-grid">
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-role">
-              Role <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <select id="eh-role" class="eh-form-select" required>
-              <option value="" disabled selected>Select role…</option>
-              <option value="hr-manager">HR Manager</option>
-              <option value="hr-director">HR Director</option>
-              <option value="ceo">CEO / Founder</option>
-              <option value="payroll">Payroll Manager</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-country">
-              Country <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <select id="eh-country" class="eh-form-select" required autocomplete="country">
-              <option value="" disabled selected>Select country…</option>
-              <option value="au">Australia</option>
-              <option value="nz">New Zealand</option>
-              <option value="uk">United Kingdom</option>
-              <option value="sg">Singapore</option>
-              <option value="my">Malaysia</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Company details row -->
-        <div class="eh-form-section-grid">
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-company">
-              Company Name <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="text"
-              id="eh-company"
-              class="eh-form-input"
-              placeholder="Acme Co."
-              required
-              autocomplete="organization"
-            >
-          </div>
-          <div class="eh-form-group">
-            <label class="eh-form-label" for="eh-employees">
-              Number of Employees <span class="eh-form-required" aria-hidden="true">*</span>
-            </label>
-            <select id="eh-employees" class="eh-form-select" required>
-              <option value="" disabled selected>Select range…</option>
-              <option value="1-10">1–10</option>
-              <option value="11-50">11–50</option>
-              <option value="51-200">51–200</option>
-              <option value="201-500">201–500</option>
-              <option value="500+">500+</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Consent -->
-        <div class="eh-form-checkbox-group">
-          <input type="checkbox" id="eh-terms" required>
-          <label for="eh-terms">
-            I agree to Employment Hero's <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>.
-            <span class="eh-form-required" aria-hidden="true"> *</span>
-          </label>
-        </div>
-        <div class="eh-form-checkbox-group">
-          <input type="checkbox" id="eh-marketing">
-          <label for="eh-marketing">
-            I consent to receiving marketing communications from the Employment Hero Group by email, text (including WhatsApp), and social media channels about its services or brands. You may withdraw your consent at any time.
-          </label>
-        </div>
-
-        <!-- Submit -->
-        <button type="submit" class="eh-form-submit">
-          Download Payday Super Compliance Factsheet
-          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </button>
-
-      </form>
-    </div><!-- /eh-form-body -->
   </div><!-- /eh-form-tray -->
 
 </div><!-- /eh-resource-landing -->
+
+<script>
+(function () {
+  'use strict';
+
+  var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
+
+  function initMarketoForm() {
+    if (typeof MktoForms2 === 'undefined') {
+      // Marketo script hasn't loaded — retry after a short delay
+      setTimeout(initMarketoForm, 500);
+      return;
+    }
+
+    MktoForms2.loadForm(
+      '//hr.employmenthero.io',
+      '387-SZZ-170',
+      1737,
+      function (form) {
+        // Hide loading indicator once the form renders
+        var loader = document.getElementById('eh-form-loading');
+        if (loader) loader.style.display = 'none';
+
+        // Redirect on successful submission
+        form.onSuccess(function () {
+          window.location.href = REDIRECT_URL;
+          return false; // Prevent Marketo's default follow-up URL
+        });
+      }
+    );
+  }
+
+  // Initialise when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMarketoForm);
+  } else {
+    initMarketoForm();
+  }
+})();
+</script>

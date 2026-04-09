@@ -3,6 +3,9 @@
   ════════════════════════════════════════════════
   WordPress: Paste as a Custom HTML block.
   Requires: 00-styles.html on the same page.
+
+  CAROUSEL IMAGES: Upload the 3 report preview images to
+  WordPress Media Library and replace the src attributes below.
 ════════════════════════════════════════════════ -->
 <div class="eh-resource-landing">
   <section class="eh-resource-hero">
@@ -10,11 +13,11 @@
 
       <!-- Breadcrumb navigation -->
       <nav class="eh-breadcrumb" aria-label="Breadcrumb">
-        <a href="#">Resources</a>
+        <a href="/resources/">Resources</a>
         <span class="eh-breadcrumb__sep" aria-hidden="true">/</span>
-        <a href="#">Factsheets</a>
+        <a href="/resources/reports/">Reports</a>
         <span class="eh-breadcrumb__sep" aria-hidden="true">/</span>
-        <span aria-current="page">Payday Super Factsheet</span>
+        <span aria-current="page">2025 Hiring Snapshot Report</span>
       </nav>
 
       <div class="eh-hero-grid">
@@ -22,14 +25,14 @@
         <!-- Left column: resource info -->
         <div>
           <div class="eh-meta-row">
-            <span class="eh-badge eh-badge-template">Template</span>
-            <span class="eh-badge eh-badge-popular">Popular</span>
+            <span class="eh-badge eh-badge-template">Report</span>
+            <span class="eh-badge eh-badge-popular">Australia</span>
           </div>
 
-          <h1 class="eh-resource-title">Payday Super Compliance Factsheet</h1>
+          <h1 class="eh-resource-title">2025 Hiring Snapshot Report: Current Trends in Recruitment</h1>
 
           <p class="eh-resource-desc">
-            Everything Australian employers need to know about the Payday Super changes coming in 2026. This factsheet covers the new legislation, key dates, compliance obligations, and a step-by-step preparation guide for your payroll team.
+            Our survey of over 1,000 Australian SME leaders paints a stark picture: small businesses spend around $8,090 annually on hiring, while medium-sized businesses stretch budgets to an average of $18,371. Discover what the data means for your business.
           </p>
 
           <div class="eh-resource-stats" aria-label="Resource details">
@@ -38,14 +41,21 @@
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
               </svg>
-              PDF Factsheet
+              PDF Report
             </span>
             <span>
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>
               </svg>
-              5 min read
+              2 min read
+            </span>
+            <span>
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Published 2 May 2025
             </span>
             <span>
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -53,11 +63,17 @@
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              2,340 downloads
+              1,000+ surveyed
             </span>
           </div>
 
-          <p class="eh-whitelabel-tag">
+          <!-- Whitelabel pill — tracked -->
+          <p
+            class="eh-whitelabel-tag"
+            data-gtm-event="whitelabel_pill"
+            data-gtm-label="Whitelabel available pill — hero"
+            style="cursor: default;"
+          >
             <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
               <line x1="7" y1="7" x2="7.01" y2="7"/>
@@ -67,42 +83,42 @@
 
           <!-- What's inside -->
           <div class="eh-usps-box">
-            <p class="eh-usps-title">What's inside this resource</p>
+            <p class="eh-usps-title">What's inside this report</p>
             <ul class="eh-usps-list">
               <li>
                 <svg class="eh-usps-check" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                Step-by-step compliance breakdown with key dates
+                Hiring budgets: small vs medium-sized businesses compared
               </li>
               <li>
                 <svg class="eh-usps-check" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                Preparation checklist for payroll teams
+                Top hiring platforms and what delivers the best ROI
               </li>
               <li>
                 <svg class="eh-usps-check" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                ATO guidance summary and interpretation
+                Why new hires leave within the first month — and what to do about it
               </li>
               <li>
                 <svg class="eh-usps-check" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                Penalty framework and risk mitigation
+                How SMEs are managing persistent staff shortages
               </li>
               <li>
                 <svg class="eh-usps-check" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                Employee communication templates
+                Survey demographics, methodology, and full data breakdowns
               </li>
             </ul>
           </div>
@@ -116,7 +132,7 @@
               aria-expanded="false"
               aria-controls="eh-form-tray"
             >
-              Download Factsheet
+              Download the Report
             </button>
             <button
               type="button"
@@ -124,23 +140,30 @@
               data-open-form
               aria-expanded="false"
               aria-controls="eh-form-tray"
+              data-gtm-event="cta_hero_secondary"
+              data-gtm-label="Get the Hiring Toolkit — hero secondary CTA"
             >
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               </svg>
-              Get the Full Payroll Pack
+              Get the Hiring Toolkit
             </button>
           </div>
         </div>
 
         <!-- Right column: preview carousel -->
+        <!--
+          CAROUSEL IMAGES
+          Upload the 3 report preview screenshots to WordPress Media Library,
+          then replace the src and data-full attributes below.
+          Recommended: 200×260px thumbnails, 600×800px full-size.
+        -->
         <div class="eh-preview-wrapper" data-carousel>
 
-          <!-- Main preview image -->
           <div class="eh-preview-main" data-carousel-main>
             <img
-              src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop"
-              alt="Factsheet preview — page 1 of 4"
+              src="/wp-content/uploads/2025/05/hiring-snapshot-report-cover.jpg"
+              alt="2025 Hiring Snapshot Report — cover page"
               data-carousel-img
             >
 
@@ -149,6 +172,8 @@
               class="eh-preview-nav eh-preview-nav-prev"
               data-carousel-prev
               aria-label="Previous preview page"
+              data-gtm-event="carousel_prev"
+              data-gtm-label="Preview carousel — previous"
             >
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"/>
@@ -160,6 +185,8 @@
               class="eh-preview-nav eh-preview-nav-next"
               data-carousel-next
               aria-label="Next preview page"
+              data-gtm-event="carousel_next"
+              data-gtm-label="Preview carousel — next"
             >
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"/>
@@ -170,6 +197,8 @@
               type="button"
               class="eh-preview-expand"
               aria-label="View full size preview"
+              data-gtm-event="carousel_expand"
+              data-gtm-label="Preview carousel — expand full size"
             >
               <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 3 21 3 21 9"/>
@@ -179,28 +208,24 @@
               </svg>
             </button>
 
-            <!-- Live region so AT announces page changes -->
             <span
               class="eh-preview-counter"
               data-carousel-counter
               aria-live="polite"
               aria-atomic="true"
-            >1 / 4</span>
+            >1 / 3</span>
           </div>
 
-          <!-- Thumbnail strip — each thumb is a <button> for keyboard access -->
-          <div class="eh-preview-thumbs" role="group" aria-label="Preview pages">
-            <button type="button" class="eh-preview-thumb active" data-carousel-thumb aria-label="View page 1" aria-pressed="true">
-              <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=260&fit=crop" alt="">
+          <!-- Thumbnail strip -->
+          <div class="eh-preview-thumbs" role="group" aria-label="Report preview pages">
+            <button type="button" class="eh-preview-thumb active" data-carousel-thumb aria-label="View cover page" aria-pressed="true">
+              <img src="/wp-content/uploads/2025/05/hiring-snapshot-report-cover-thumb.jpg" alt="">
             </button>
-            <button type="button" class="eh-preview-thumb" data-carousel-thumb aria-label="View page 2" aria-pressed="false">
-              <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&h=260&fit=crop" alt="">
+            <button type="button" class="eh-preview-thumb" data-carousel-thumb aria-label="View key findings page" aria-pressed="false">
+              <img src="/wp-content/uploads/2025/05/hiring-snapshot-report-key-findings-thumb.jpg" alt="">
             </button>
-            <button type="button" class="eh-preview-thumb" data-carousel-thumb aria-label="View page 3" aria-pressed="false">
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=260&fit=crop" alt="">
-            </button>
-            <button type="button" class="eh-preview-thumb" data-carousel-thumb aria-label="View page 4" aria-pressed="false">
-              <img src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=200&h=260&fit=crop" alt="">
+            <button type="button" class="eh-preview-thumb" data-carousel-thumb aria-label="View hiring spend data page" aria-pressed="false">
+              <img src="/wp-content/uploads/2025/05/hiring-snapshot-report-chart-thumb.jpg" alt="">
             </button>
           </div>
 
