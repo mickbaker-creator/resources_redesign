@@ -1327,12 +1327,19 @@
   padding-right: 0 !important;
   padding-bottom: 0 !important;
   line-height: 1.4 !important;
+  display: block !important;
 }
 
-/* Required asterisk */
+/* Required asterisk — hide Marketo's element (it renders as a sibling of the
+   label so it floats onto its own line in our flex layout). Instead, inject
+   " *" via CSS ::after on the label so it always sits inline after the text. */
 #eh-form-tray .mktoAsterix {
-  color: var(--wp--preset--color--error-600) !important;
-  margin-left: 2px !important;
+  display: none !important;
+}
+#eh-form-tray .mktoRequiredField .mktoLabel::after {
+  content: ' *';
+  color: var(--wp--preset--color--error-600);
+  font-weight: 500;
 }
 
 /* Text inputs + selects — target both .mktoField class and native elements
@@ -1364,6 +1371,16 @@
   outline: none !important;
   border-color: var(--wp--preset--color--violet-500) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--violet-500) 10%, transparent) !important;
+}
+
+/* Autofill background override — Chrome/Safari inject a blue tint on
+   autofilled fields; the only reliable override is a large inset box-shadow */
+#eh-form-tray input:-webkit-autofill,
+#eh-form-tray input:-webkit-autofill:hover,
+#eh-form-tray input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 60px #ffffff inset !important;
+  -webkit-text-fill-color: #121214 !important;
+  transition: background-color 5000s ease-in-out 0s !important;
 }
 
 /* Select arrow */
