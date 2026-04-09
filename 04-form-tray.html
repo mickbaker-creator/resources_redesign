@@ -12,7 +12,7 @@
 ═════════════════════════════════════════════════════ -->
 
 <!-- Marketo forms script — loads once, used by the form below -->
-<script src="//hr.employmenthero.io/js/forms2/js/forms2.min.js"></script>
+<script src="https://hr.employmenthero.io/js/forms2/js/forms2.min.js"></script>
 
 <div class="eh-resource-landing">
 
@@ -80,15 +80,33 @@
 
   var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
 
+  var mktoRetries = 0;
+  var MKTO_MAX_RETRIES = 20; // 10 seconds before showing fallback
+
+  function showFormError() {
+    var loader = document.getElementById('eh-form-loading');
+    if (loader) {
+      loader.innerHTML =
+        'The form couldn\'t load — please try refreshing the page, ' +
+        'or <a href="mailto:hello@employmenthero.com">contact us</a> ' +
+        'to get the report sent directly.';
+    }
+  }
+
   function initMarketoForm() {
     if (typeof MktoForms2 === 'undefined') {
-      // Marketo script hasn't loaded — retry after a short delay
+      mktoRetries++;
+      if (mktoRetries >= MKTO_MAX_RETRIES) {
+        showFormError();
+        return;
+      }
+      // Marketo script hasn't loaded yet — retry after a short delay
       setTimeout(initMarketoForm, 500);
       return;
     }
 
     MktoForms2.loadForm(
-      '//hr.employmenthero.io',
+      'https://hr.employmenthero.io',
       '387-SZZ-170',
       1737,
       function (form) {

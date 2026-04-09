@@ -63,6 +63,15 @@
   font-size: var(--wp--preset--font-size--md);
   color: var(--wp--preset--color--off-black);
   line-height: 1.6;
+
+  /* ── Full-bleed breakout ────────────────────────────────────────
+     WordPress wraps Custom HTML blocks in a content-width container
+     (~1300px). This breaks the component out to full viewport width
+     regardless of the theme's layout.contentSize setting.
+     The inner .eh-container still constrains text to 1300px.
+  ──────────────────────────────────────────────────────────────── */
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
 }
 
 .eh-resource-landing a {
