@@ -209,9 +209,10 @@
    HERO SECTION
    ============================================================ */
 .eh-resource-hero {
-  background: var(--wp--preset--gradient--white-to-lv-50);
-  padding-top:    var(--wp--preset--spacing--16); /* 64px */
-  padding-bottom: var(--wp--preset--spacing--20); /* 80px */
+  background: var(--wp--preset--gradient--white-to-lv-50,
+    linear-gradient(180deg, #FFFFFF 0%, #F9F5FF 100%));
+  padding-top:    var(--wp--preset--spacing--16, 4rem);
+  padding-bottom: var(--wp--preset--spacing--20, 5rem);
   position: relative;
   overflow: hidden;
 }

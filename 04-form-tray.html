@@ -122,12 +122,23 @@
       return;
     }
 
-    MktoForms2.loadForm(
-      'https://hr.employmenthero.io',
-      '387-SZZ-170',
-      1737,
-      function (form) {
-        var formEl = form.getFormElem()[0];
+    // ── Timeout: if the loadForm callback never fires, show error ─
+    var formCallbackFired = false;
+    setTimeout(function () {
+      if (!formCallbackFired) {
+        console.error('[EH Form] loadForm callback never fired — form ID, account, or server may be incorrect, or the domain may not be whitelisted in Marketo.');
+        showFormError();
+      }
+    }, 12000);
+
+    try {
+      MktoForms2.loadForm(
+        'https://hr.employmenthero.io',
+        '387-SZZ-170',
+        1737,
+        function (form) {
+          formCallbackFired = true;
+          var formEl = form.getFormElem()[0];
 
         // ── Strip Marketo's injected inline styles ──────────────────
         formEl.removeAttribute('style');
@@ -223,6 +234,10 @@
         });
       }
     );
+    } catch (e) {
+      console.error('[EH Form] MktoForms2.loadForm threw an error:', e);
+      showFormError();
+    }
   }
 
   // Initialise when DOM is ready
