@@ -984,7 +984,9 @@
   transform: translateX(100%);
   transition: transform 0.3s ease;
   z-index: 9999;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* .eh-form-body handles scrolling */
   box-shadow:
     -4px 0 var(--wp--preset--spacing--6)
     color-mix(in srgb, var(--wp--preset--color--off-black) 15%, transparent);
@@ -1062,7 +1064,17 @@
 }
 
 .eh-form-body {
+  flex: 1;
+  overflow-y: auto;
   padding: var(--wp--preset--spacing--6);
+}
+
+/* Sticky submit footer — button is moved here by JS after form loads */
+.eh-form-footer {
+  flex-shrink: 0;
+  padding: var(--wp--preset--spacing--4) var(--wp--preset--spacing--6);
+  background: var(--wp--preset--color--white);
+  border-top: 1px solid var(--wp--preset--color--neutral-200);
 }
 
 .eh-form-desc {
@@ -1511,17 +1523,9 @@
   outline: none !important;
 }
 
-/* ── Form tray body: apply EH's form-v2-violet-box-shadow-pattern ── */
-#eh-form-tray .eh-form-body {
-  background: var(--wp--preset--color--white);
-  border: 1px solid var(--wp--preset--color--light-violet-500);
-  border-radius: var(--wp--preset--spacing--5);
-  box-shadow: 0 6px 40px 0 #e6d5fe, 0 -1px 3px 0 rgba(40, 5, 65, 0.05);
-  padding: var(--wp--preset--spacing--6);
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+/* ── Button row — no top margin; footer padding handles spacing ─ */
+#eh-form-tray .mktoButtonRow {
+  margin-top: 0 !important;
 }
 
 /* ── Form loading state ─────────────────────────────────────── */

@@ -95,29 +95,92 @@
         var formEl = form.getFormElem()[0];
 
         // ── Strip Marketo's injected inline styles ──────────────────
-        // Marketo adds style="width:Xpx" and similar inline attributes
-        // to almost every element, which override CSS rules even with
-        // !important. Removing them lets our stylesheet take full control.
         formEl.removeAttribute('style');
         formEl.querySelectorAll('[style]').forEach(function (el) {
           el.removeAttribute('style');
         });
 
         // ── Disable Marketo's own stylesheet ────────────────────────
-        // forms2.min.js injects a <link> to forms2BaseStyle.css.
-        // Disabling it prevents their default styles from competing.
         document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
           link.disabled = true;
         });
 
-        // ── Hide loading indicator ───────────────────────────────────
+        // ── Update hint texts ─────────────────────────────────────
+        var hintOverrides = {
+          'InstructEmail':             'This lets us send important updates related to your enquiry.',
+          'InstructNumberOfEmployees': 'This helps us recommend the right solutions and resources.'
+        };
+        Object.keys(hintOverrides).forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = hintOverrides[id];
+        });
+
+        // ── Country: inject a placeholder option ──────────────────
+        // The Country select has no empty default option, so the field
+        // appears blank. Add a disabled placeholder so it reads "Country"
+        // until the user makes a selection.
+        var countrySelect = document.getElementById('Country');
+        if (countrySelect && countrySelect.options[0] && countrySelect.options[0].value !== '') {
+          var countryPlaceholder = document.createElement('option');
+          countryPlaceholder.value = '';
+          countryPlaceholder.textContent = 'Country';
+          countryPlaceholder.disabled = true;
+          countryPlaceholder.selected = true;
+          countrySelect.insertBefore(countryPlaceholder, countrySelect.firstChild);
+        }
+
+        // ── Move submit button to sticky footer ───────────────────
+        // Extracts .mktoButtonRow from the scrollable form body and
+        // appends it as a fixed footer so it's always visible.
+        var tray      = document.getElementById('eh-form-tray');
+        var formBody  = tray && tray.querySelector('.eh-form-body');
+        var buttonRow = formEl.querySelector('.mktoButtonRow');
+        if (tray && formBody && buttonRow) {
+          var footer = document.createElement('div');
+          footer.className = 'eh-form-footer';
+          footer.appendChild(buttonRow);
+          formBody.insertAdjacentElement('afterend', footer);
+        }
+
+        // ── Auto-scroll to next empty field after each field fills ─
+        // As the user completes a field the form scrolls just enough
+        // to bring the next empty field into view — no jarring jumps.
+        var scrollableBody = tray && tray.querySelector('.eh-form-body');
+        var allFields = Array.from(formEl.querySelectorAll(
+          'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
+        ));
+
+        allFields.forEach(function (field, index) {
+          var evt = field.tagName === 'SELECT' ? 'change' : 'blur';
+          field.addEventListener(evt, function () {
+            if (!field.value) return;
+
+            // Find the next unfilled field
+            var nextField = null;
+            for (var i = index + 1; i < allFields.length; i++) {
+              if (!allFields[i].value) {
+                nextField = allFields[i];
+                break;
+              }
+            }
+
+            if (nextField && scrollableBody) {
+              var row = nextField.closest('.mktoFormRow') || nextField.parentElement;
+              requestAnimationFrame(function () {
+                row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              });
+            }
+          });
+        });
+
+        // ── Hide loading indicator ─────────────────────────────────
         var loader = document.getElementById('eh-form-loading');
         if (loader) loader.style.display = 'none';
 
-        // ── Redirect on successful submission ───────────────────────
+        // ── Redirect on successful submission ─────────────────────
         form.onSuccess(function () {
           window.location.href = REDIRECT_URL;
-          return false; // Prevent Marketo's default follow-up URL
+          return false;
         });
       }
     );
