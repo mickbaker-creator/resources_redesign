@@ -302,9 +302,14 @@
         }
       }
 
-      // Move submit button to sticky footer
+      // Set submit button text BEFORE moving the button row out of formEl.
+      // (After appendChild moves btnRow, formEl.querySelector can no longer find .mktoButton.)
       var tray    = document.getElementById('eh-form-tray');
       var btnRow  = formEl.querySelector('.mktoButtonRow');
+      var submitBtn = btnRow ? btnRow.querySelector('.mktoButton') : null;
+      if (submitBtn) submitBtn.textContent = 'Download now';
+
+      // Move submit button row to sticky footer
       if (tray) {
         var formBody = tray.querySelector('.eh-form-body');
         if (formBody) {
@@ -340,10 +345,6 @@
           }
         });
       });
-
-      // Override submit button text
-      var submitBtn = formEl.querySelector('.mktoButton');
-      if (submitBtn) submitBtn.textContent = 'Download now';
 
       // Redirect on successful submission
       form.onSuccess(function () {
