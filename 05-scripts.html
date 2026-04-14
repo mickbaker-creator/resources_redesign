@@ -254,11 +254,12 @@
 
   // ============================================================
   // MARKETO FORM INIT
-  // Runs at window.load so the EH theme has time to define
-  // MktoForms2 before we start polling for it.
+  // On production the EH theme pre-loads forms2.min.js so MktoForms2
+  // is available immediately. On other pages (QA, previews) it may
+  // not be, causing a multi-second polling delay.
+  // Fix: inject forms2.min.js ourselves if it isn't already present,
+  // then call setupMarketoForm() directly — no polling needed.
   // ============================================================
-  var mktoRetries = 0;
-  var MKTO_MAX_RETRIES = 60;
 
   function showFormError() {
     var loader = document.querySelector('.eh-form-loading');
@@ -267,16 +268,9 @@
     }
   }
 
-  function initMarketoForm() {
-    if (typeof MktoForms2 === 'undefined') {
-      mktoRetries++;
-      if (mktoRetries >= MKTO_MAX_RETRIES) {
-        showFormError();
-        return;
-      }
-      setTimeout(initMarketoForm, 500);
-      return;
-    }
+  // setupMarketoForm — assumes MktoForms2 is already defined.
+  // Registers the whenReady callback then calls loadForm.
+  function setupMarketoForm() {
 
     MktoForms2.whenReady(function (form) {
       if (form.getId() !== FORM_ID) return;
@@ -309,6 +303,25 @@
       setHint('Company',           'This helps us understand your business and industry better.');
       setHint('Industry',          'This helps us understand your business and industry better.');
       setHint('NumberOfEmployees', 'This helps us recommend the right solutions and resources.');
+
+      // Required asterisk on checkbox/radio labels.
+      // The outer .mktoLabel is hidden by our CSS (display:none).
+      // We inject a visible marker into the inner label of each
+      // required field, excluding the marketing opt-in whose outer
+      // label has id="LblOpted_In_GDPR__c" (confirmed from live source).
+      formEl.querySelectorAll('.mktoFieldWrap.mktoRequiredField').forEach(function (wrap) {
+        var outerLabel = wrap.querySelector('.mktoLabel');
+        if (!outerLabel) return;
+        if (outerLabel.id === 'LblOpted_In_GDPR__c') return;
+        wrap.querySelectorAll('.mktoLogicalField label').forEach(function (lbl) {
+          if (lbl.querySelector('.eh-required-mark')) return;
+          var req = document.createElement('span');
+          req.setAttribute('aria-hidden', 'true');
+          req.className = 'eh-required-mark';
+          req.textContent = '* ';
+          lbl.insertBefore(req, lbl.firstChild);
+        });
+      });
 
       // Country field.
       // Run in a setTimeout so our code fires AFTER any Marketo post-render
@@ -438,10 +451,28 @@
     }
   }
 
-  if (document.readyState === 'complete') {
-    initMarketoForm();
+  // initMarketoForm — loads forms2.min.js if needed, then calls setupMarketoForm.
+  // On production the theme has already loaded the library so we go straight to
+  // setupMarketoForm. On QA/preview pages we inject the script ourselves, which
+  // cuts the form render delay from ~5 s (polling) to < 1 s (network only).
+  function initMarketoForm() {
+    if (typeof MktoForms2 !== 'undefined') {
+      setupMarketoForm();
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = MKTO_BASE_URL + '/js/forms2/js/forms2.min.js';
+    script.onload = setupMarketoForm;
+    script.onerror = showFormError;
+    document.head.appendChild(script);
+  }
+
+  // Fire on DOMContentLoaded — page structure is ready, no need to wait
+  // for images / iframes that delay the window load event.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMarketoForm);
   } else {
-    window.addEventListener('load', initMarketoForm);
+    initMarketoForm();
   }
 
   // ============================================================
