@@ -416,7 +416,9 @@
     form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(function (inp) {
       if (!inp.required) return;
       var ok = inp.value.trim() !== '';
-      if (inp.type === 'email' && ok) ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+      if (inp.type === 'email') {
+        if (ok) ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+      }
       ok ? markValid(inp) : markInvalid(inp);
       if (!ok) { valid = false; if (!firstBad) firstBad = inp; }
     });
@@ -440,7 +442,9 @@
 
     var errEl = document.getElementById('eh-form-error');
     if (errEl) errEl.hidden = valid;
-    if (!valid && firstBad) firstBad.focus();
+    if (!valid) {
+      if (firstBad) firstBad.focus();
+    }
     return valid;
   }
 
