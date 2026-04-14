@@ -1704,13 +1704,21 @@
   border-color: #16a34a !important;
 }
 
-/* Required asterisk injected into checkbox/radio labels by JS.
-   The outer .mktoLabel (Marketo's own asterisk container) is hidden,
-   so JS copies the marker into the visible inner label as .eh-required-mark. */
-.eh-required-mark {
+/* ── Required asterisk ──────────────────────────────────────── */
+/* Hide Marketo's native asterisk span (we re-add via CSS ::before). */
+#eh-form-tray .mktoAsterix { display: none !important; }
+
+/* Add asterisk before the visible checkbox/radio label text for required fields. */
+#eh-form-tray .mktoFieldWrap.mktoRequiredField .mktoLogicalField label::before {
+  content: '* ';
   color: var(--wp--preset--color--error-600, #dc2626);
   font-weight: 600;
-  margin-right: 0.1875rem;
+}
+
+/* Exclude the marketing opt-in (GDPR) field.
+   Its outer Marketo label element has id="LblOpted_In_GDPR__c". */
+#eh-form-tray .mktoFieldWrap:has(#LblOpted_In_GDPR__c) .mktoLogicalField label::before {
+  content: none;
 }
 
 /* Autofill override (Chrome/Safari inject a blue background) */

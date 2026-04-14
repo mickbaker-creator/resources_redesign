@@ -36,15 +36,9 @@
   var MKTO_MUNCHKIN   = '387-SZZ-170';
   var COUNTRY_DEFAULT = 'Australia'; // Change to 'United Kingdom' for UK forms.
 
-  // Pattern matched against checkbox/radio label text to decide whether to show *.
-  // Only labels that MATCH this pattern get an asterisk.
-  // "Processes" / "processing" / "privacy" / "terms" → required consent → gets *.
-  // Marketing opt-in copy typically won't contain these words → skipped.
-  // Update the pattern if your form uses different wording.
-  var ASTERISK_REQUIRE_PATTERN = /process|privacy|terms/i;
-
-  // Hard override: field IDs that must NEVER get an asterisk regardless of label text.
-  var ASTERISK_EXCLUDE = [];
+  // NOTE: Required asterisk on checkboxes is handled via CSS in 00-styles.html,
+  // using :has(#LblOpted_In_GDPR__c) to exclude the marketing opt-in field.
+  // No JS injection needed.
 
   function init() {
     initFullBleed();
@@ -316,33 +310,6 @@
       setHint('Industry',          'This helps us understand your business and industry better.');
       setHint('NumberOfEmployees', 'This helps us recommend the right solutions and resources.');
 
-      // Inject required asterisk into visible checkbox/radio labels.
-      // The outer .mktoLabel (which holds Marketo's asterisk) is hidden by our
-      // CSS so the asterisk is invisible. We copy it into the visible inner
-      // label instead.
-      // Strategy: match the visible label text against ASTERISK_REQUIRE_PATTERN.
-      // Only consent checkboxes whose label contains the pattern (e.g. "process",
-      // "privacy", "terms") get a *. Marketing opt-in labels are skipped because
-      // they won't contain those keywords. ASTERISK_EXCLUDE is a hard override.
-      formEl.querySelectorAll('.mktoFormRow').forEach(function (row) {
-        var outerAsterix = row.querySelector('.mktoLabel .mktoAsterix');
-        if (!outerAsterix) return;
-        var firstInput = row.querySelector('input, select, textarea');
-        if (firstInput) {
-          if (ASTERISK_EXCLUDE.indexOf(firstInput.id) !== -1) return;
-        }
-        var logicalLabels = row.querySelectorAll('.mktoLogicalField label');
-        logicalLabels.forEach(function (lbl) {
-          if (!ASTERISK_REQUIRE_PATTERN.test(lbl.textContent)) return;
-          if (lbl.querySelector('.eh-required-mark')) return; // already injected
-          var req = document.createElement('span');
-          req.setAttribute('aria-hidden', 'true');
-          req.className = 'eh-required-mark';
-          req.textContent = '*';
-          lbl.insertBefore(req, lbl.firstChild);
-        });
-      });
-
       // Country field.
       // Run in a setTimeout so our code fires AFTER any Marketo post-render
       // processing that may reset the select value.
@@ -401,7 +368,7 @@
             countrySelect.classList.remove('eh-select-placeholder');
           }
         }
-      }, 100);
+      }, 500);
 
       // Set submit button text BEFORE moving the button row out of formEl.
       // (After appendChild moves btnRow, formEl.querySelector can no longer find .mktoButton.)
