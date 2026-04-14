@@ -1451,6 +1451,11 @@
   border-color: var(--wp--preset--color--deep-violet);
 }
 
+/* Sticky mobile CTA bar — hidden on desktop, revealed via 768px rule below */
+.eh-sticky-cta {
+  display: none;
+}
+
 /* ============================================================
    RESPONSIVE
    Breakpoint names (from design system):
@@ -1488,6 +1493,12 @@
     font-size: var(--wp--preset--font-size--md);
   }
 
+  /* Tighten hero vertical padding — desktop values are too tall on mobile */
+  .eh-resource-hero {
+    padding-top: var(--wp--preset--spacing--8, 2rem);
+    padding-bottom: var(--wp--preset--spacing--6, 1.5rem);
+  }
+
   .eh-related-grid {
     grid-template-columns: 1fr;
   }
@@ -1503,17 +1514,48 @@
   .eh-form-group.full-width {
     grid-column: span 1;
   }
+
+  /* Bottom clearance so sticky CTA doesn't overlap the last content */
+  .eh-related-section {
+    padding-bottom: calc(var(--wp--preset--spacing--12) + 5rem);
+  }
+
+  /* Sticky download CTA — fixed bar at the bottom of the viewport */
+  .eh-sticky-cta {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 300;
+    background: var(--wp--preset--color--white);
+    border-top: 1px solid var(--wp--preset--color--neutral-200);
+    padding: var(--wp--preset--spacing--3) var(--wp--preset--spacing--5);
+    padding-bottom: calc(var(--wp--preset--spacing--3) + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .eh-sticky-cta .eh-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* mobile-lg and below */
 @media (max-width: 560px) {
   .eh-cta-row {
     flex-direction: column;
+    align-items: stretch; /* ensure both buttons + their wrappers expand to full width */
   }
 
   .eh-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .eh-cta-bundle-note {
+    text-align: center;
   }
 }
 
