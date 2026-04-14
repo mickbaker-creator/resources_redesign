@@ -28,6 +28,13 @@
 
   var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
 
+  // MARKETO FORM — update per resource / region.
+  // AU instance:  base = 'https://hr.employmenthero.io',  munchkin = '387-SZZ-170'
+  // UK instance:  base = 'https://???',                    munchkin = '???'
+  var FORM_ID       = 1737;
+  var MKTO_BASE_URL = 'https://hr.employmenthero.io';
+  var MKTO_MUNCHKIN = '387-SZZ-170';
+
   function init() {
     initFullBleed();
     initTracking();
@@ -267,7 +274,7 @@
     }
 
     MktoForms2.whenReady(function (form) {
-      if (form.getId() !== 1737) return;
+      if (form.getId() !== FORM_ID) return;
 
       var formEl = form.getFormElem()[0];
 
@@ -314,20 +321,10 @@
         });
       });
 
-      // Country placeholder option
-      var countrySelect = document.getElementById('Country');
-      if (countrySelect) {
-        if (countrySelect.options[0]) {
-          if (countrySelect.options[0].value !== '') {
-            var placeholder = document.createElement('option');
-            placeholder.value = '';
-            placeholder.textContent = 'Country';
-            placeholder.disabled = true;
-            placeholder.selected = true;
-            countrySelect.insertBefore(placeholder, countrySelect.firstChild);
-          }
-        }
-      }
+      // Country field — default value is controlled in Marketo's form editor.
+      // Set the field's default to 'Australia' (AU forms) or 'United Kingdom' (UK forms)
+      // via the form field settings in Marketo so it pre-selects the correct country
+      // without JavaScript. No client-side injection needed.
 
       // Set submit button text BEFORE moving the button row out of formEl.
       // (After appendChild moves btnRow, formEl.querySelector can no longer find .mktoButton.)
@@ -337,7 +334,7 @@
       if (submitBtn) submitBtn.textContent = 'Download now';
       // Re-associate the button with the form after it gets moved outside <form>.
       // Without this, the button has no form owner and submit never fires.
-      if (submitBtn) submitBtn.setAttribute('form', 'mktoForm_1737');
+      if (submitBtn) submitBtn.setAttribute('form', 'mktoForm_' + FORM_ID);
 
       // Move submit button row to sticky footer
       if (tray) {
@@ -391,7 +388,7 @@
     });
 
     try {
-      MktoForms2.loadForm('https://hr.employmenthero.io', '387-SZZ-170', 1737);
+      MktoForms2.loadForm(MKTO_BASE_URL, MKTO_MUNCHKIN, FORM_ID);
     } catch (e) {
       showFormError();
     }
