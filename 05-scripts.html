@@ -36,10 +36,15 @@
   var MKTO_MUNCHKIN   = '387-SZZ-170';
   var COUNTRY_DEFAULT = 'Australia'; // Change to 'United Kingdom' for UK forms.
 
-  // Marketo field IDs whose required asterisk should be suppressed.
-  // Check the field name in Marketo Form > Field Details and add it here.
-  // Marketing opt-in should NOT be mandatory — only terms consent should show *.
-  var ASTERISK_EXCLUDE = ['mktOptIn'];
+  // Pattern matched against checkbox/radio label text to decide whether to show *.
+  // Only labels that MATCH this pattern get an asterisk.
+  // "Processes" / "processing" / "privacy" / "terms" → required consent → gets *.
+  // Marketing opt-in copy typically won't contain these words → skipped.
+  // Update the pattern if your form uses different wording.
+  var ASTERISK_REQUIRE_PATTERN = /process|privacy|terms/i;
+
+  // Hard override: field IDs that must NEVER get an asterisk regardless of label text.
+  var ASTERISK_EXCLUDE = [];
 
   function init() {
     initFullBleed();
@@ -315,24 +320,21 @@
       // The outer .mktoLabel (which holds Marketo's asterisk) is hidden by our
       // CSS so the asterisk is invisible. We copy it into the visible inner
       // label instead.
-      // Rule: only inject * if the checkbox/radio input has the HTML `required`
-      // attribute — this is set by Marketo for genuinely required fields.
-      // Optional fields like marketing consent won't have `required` and are skipped.
-      // ASTERISK_EXCLUDE is a manual override for cases where Marketo incorrectly
-      // marks an optional field as required in the form builder.
+      // Strategy: match the visible label text against ASTERISK_REQUIRE_PATTERN.
+      // Only consent checkboxes whose label contains the pattern (e.g. "process",
+      // "privacy", "terms") get a *. Marketing opt-in labels are skipped because
+      // they won't contain those keywords. ASTERISK_EXCLUDE is a hard override.
       formEl.querySelectorAll('.mktoFormRow').forEach(function (row) {
         var outerAsterix = row.querySelector('.mktoLabel .mktoAsterix');
         if (!outerAsterix) return;
-        var checkboxes = row.querySelectorAll('input[type="checkbox"], input[type="radio"]');
-        if (checkboxes.length > 0) {
-          var anyRequired = Array.from(checkboxes).some(function (cb) { return cb.required; });
-          if (!anyRequired) return;
-        }
         var firstInput = row.querySelector('input, select, textarea');
         if (firstInput) {
           if (ASTERISK_EXCLUDE.indexOf(firstInput.id) !== -1) return;
         }
-        row.querySelectorAll('.mktoLogicalField label').forEach(function (lbl) {
+        var logicalLabels = row.querySelectorAll('.mktoLogicalField label');
+        logicalLabels.forEach(function (lbl) {
+          if (!ASTERISK_REQUIRE_PATTERN.test(lbl.textContent)) return;
+          if (lbl.querySelector('.eh-required-mark')) return; // already injected
           var req = document.createElement('span');
           req.setAttribute('aria-hidden', 'true');
           req.className = 'eh-required-mark';
@@ -341,22 +343,28 @@
         });
       });
 
-      // Country default — try to pre-select COUNTRY_DEFAULT.
-      // If the value doesn't take (option text mismatch or Marketo timing),
-      // fall back to injecting a visible "Country" placeholder label so the
-      // field isn't silently blank.
-      var countrySelect = document.getElementById('Country');
-      if (countrySelect) {
-        countrySelect.value = COUNTRY_DEFAULT;
-        if (countrySelect.value !== COUNTRY_DEFAULT) {
+      // Country field.
+      // Run in a setTimeout so our code fires AFTER any Marketo post-render
+      // processing that may reset the select value.
+      // 1. Always inject a visible "Country" placeholder option at position 0
+      //    so the field is never silently blank.
+      // 2. Try to pre-select COUNTRY_DEFAULT — if it matches an option the
+      //    placeholder is deselected automatically.
+      setTimeout(function () {
+        var countrySelect = document.getElementById('Country');
+        if (!countrySelect) return;
+        if (!countrySelect.querySelector('option[value=""]')) {
           var countryPh = document.createElement('option');
           countryPh.value = '';
           countryPh.textContent = 'Country';
           countryPh.disabled = true;
-          countryPh.selected = true;
           countrySelect.insertBefore(countryPh, countrySelect.firstChild);
         }
-      }
+        countrySelect.value = COUNTRY_DEFAULT;
+        if (countrySelect.value !== COUNTRY_DEFAULT) {
+          countrySelect.value = '';
+        }
+      }, 100);
 
       // Set submit button text BEFORE moving the button row out of formEl.
       // (After appendChild moves btnRow, formEl.querySelector can no longer find .mktoButton.)
