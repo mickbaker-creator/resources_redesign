@@ -22,23 +22,20 @@
 (function () {
   'use strict';
 
-  // RESOURCE METADATA — update these values for each resource page.
+  // ── CONFIGURE PER RESOURCE ───────────────────────────────────
   var RESOURCE_NAME = '2025 Hiring Snapshot Report: Current Trends in Recruitment';
   var RESOURCE_TYPE = 'Report';
+  var REDIRECT_URL  = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
 
-  var REDIRECT_URL = 'https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment';
+  // Marketo instance — AU or UK
+  // AU: base = 'https://hr.employmenthero.io', munchkin = '387-SZZ-170'
+  var FORM_ID       = 1737;
+  var MKTO_BASE_URL = 'https://hr.employmenthero.io';
+  var MKTO_MUNCHKIN = '387-SZZ-170';
 
-  // MARKETO FORM — update per resource / region.
-  // AU instance:  base = 'https://hr.employmenthero.io',  munchkin = '387-SZZ-170'
-  // UK instance:  base = 'https://???',                    munchkin = '???'
-  var FORM_ID         = 1737;
-  var MKTO_BASE_URL   = 'https://hr.employmenthero.io';
-  var MKTO_MUNCHKIN   = '387-SZZ-170';
-  var COUNTRY_DEFAULT = 'Australia'; // Change to 'United Kingdom' for UK forms.
-
-  // NOTE: Required asterisk on checkboxes is handled via CSS in 00-styles.html,
-  // using :has(#LblOpted_In_GDPR__c) to exclude the marketing opt-in field.
-  // No JS injection needed.
+  // Country pre-selected on load. Must match an option value in COUNTRY_LIST.
+  var COUNTRY_DEFAULT = 'Australia';
+  // ─────────────────────────────────────────────────────────────
 
   function init() {
     initFullBleed();
@@ -46,6 +43,7 @@
     initFormTray();
     initCarousels();
     initInfoPopovers();
+    initNativeForm();
   }
 
   if (document.readyState === 'loading') {
@@ -253,227 +251,223 @@
   }
 
   // ============================================================
-  // MARKETO FORM INIT
-  // On production the EH theme pre-loads forms2.min.js so MktoForms2
-  // is available immediately. On other pages (QA, previews) it may
-  // not be, causing a multi-second polling delay.
-  // Fix: inject forms2.min.js ourselves if it isn't already present,
-  // then call setupMarketoForm() directly — no polling needed.
+  // COUNTRY LIST
+  // Used to populate the Country select. Australia is pre-selected
+  // via COUNTRY_DEFAULT. Update COUNTRY_DEFAULT for non-AU forms.
   // ============================================================
+  var COUNTRY_LIST = [
+    'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda',
+    'Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain',
+    'Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan',
+    'Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria',
+    'Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada',
+    'Central African Republic','Chad','Chile','China','Colombia','Comoros',
+    'Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic',
+    'Democratic Republic of the Congo','Denmark','Djibouti','Dominica',
+    'Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea',
+    'Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France',
+    'Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada',
+    'Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras',
+    'Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland',
+    'Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya',
+    'Kiribati','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho',
+    'Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar',
+    'Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands',
+    'Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco',
+    'Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia',
+    'Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger',
+    'Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan',
+    'Palau','Panama','Papua New Guinea','Paraguay','Peru','Philippines',
+    'Poland','Portugal','Qatar','Romania','Russia','Rwanda',
+    'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+    'Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal',
+    'Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia',
+    'Solomon Islands','Somalia','South Africa','South Korea','South Sudan',
+    'Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria',
+    'Taiwan','Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga',
+    'Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda',
+    'Ukraine','United Arab Emirates','United Kingdom','United States',
+    'Uruguay','Uzbekistan','Vanuatu','Venezuela','Vietnam','Yemen',
+    'Zambia','Zimbabwe'
+  ];
 
-  function showFormError() {
-    var loader = document.querySelector('.eh-form-loading');
-    if (loader) {
-      loader.innerHTML = 'The form could not load. Please try refreshing the page.';
+  // ============================================================
+  // NATIVE FORM HANDLER
+  // Posts directly to Marketo's form submission endpoint without
+  // MktoForms2. No external JS dependency — renders instantly.
+  // ============================================================
+  var MKTO_SUBMIT_URL = MKTO_BASE_URL + '/index.php/leadCapture/save2';
+
+  function initNativeForm() {
+    var form = document.getElementById('eh-download-form');
+    if (!form) return;
+
+    // Populate hidden tracking fields
+    form.querySelector('[name="formid"]').value    = FORM_ID;
+    form.querySelector('[name="munchkinId"]').value = MKTO_MUNCHKIN;
+    form.querySelector('[name="formSource"]').value = window.location.href;
+    form.querySelector('[name="Opt_In_Consent_Message__c"]').value =
+      'By checking this box, you agree to the processing of data in accordance with Employment Hero\'s Privacy Policy.';
+
+    var params = new URLSearchParams(window.location.search);
+    var gclid  = params.get('gclid') || params.get('GCLID') || '';
+    if (gclid) form.querySelector('[name="GCLID__c"]').value = gclid;
+
+    var mktoTrk = '';
+    document.cookie.split('; ').forEach(function (c) {
+      if (c.indexOf('_mkto_trk=') === 0) mktoTrk = c.split('=').slice(1).join('=');
+    });
+    if (mktoTrk) form.querySelector('[name="Lead_Linking_ID__c"]').value = mktoTrk;
+
+    // Build Country select options from COUNTRY_LIST
+    var countrySelect = document.getElementById('fn-Country');
+    if (countrySelect) {
+      COUNTRY_LIST.forEach(function (name) {
+        var opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        if (name === COUNTRY_DEFAULT) opt.selected = true;
+        countrySelect.appendChild(opt);
+      });
     }
-  }
 
-  // setupMarketoForm — assumes MktoForms2 is already defined.
-  // Registers the whenReady callback then calls loadForm.
-  function setupMarketoForm() {
-
-    MktoForms2.whenReady(function (form) {
-      if (form.getId() !== FORM_ID) return;
-
-      var formEl = form.getFormElem()[0];
-
-      // Strip Marketo inline styles
-      formEl.removeAttribute('style');
-      formEl.querySelectorAll('[style]').forEach(function (el) {
-        el.removeAttribute('style');
-      });
-
-      // Disable Marketo stylesheet
-      document.querySelectorAll('link[href*="forms2"]').forEach(function (link) {
-        link.disabled = true;
-      });
-
-      // Update hint texts. Finds each field by its Marketo field ID, then
-      // targets the .mktoInstruction in the same row — more reliable than
-      // the InstructXxx IDs which may not exist depending on form config.
-      function setHint(fieldId, text) {
-        var field = formEl.querySelector('#' + fieldId);
-        if (!field) return;
-        var row = field.closest('.mktoFormRow');
-        if (!row) return;
-        var hint = row.querySelector('.mktoInstruction');
-        if (hint) hint.textContent = text;
+    // Select placeholder styling — grey when on blank option, normal when value chosen
+    form.querySelectorAll('select').forEach(function (sel) {
+      function updatePlaceholder() {
+        sel.classList.toggle('eh-select-placeholder', !sel.value);
       }
-      setHint('Email',             'This lets us send important updates related to your enquiry.');
-      setHint('Company',           'This helps us understand your business and industry better.');
-      setHint('Industry',          'This helps us understand your business and industry better.');
-      setHint('NumberOfEmployees', 'This helps us recommend the right solutions and resources.');
-
-      // Required asterisk on checkbox/radio labels.
-      // The outer .mktoLabel is hidden by our CSS (display:none).
-      // We inject a visible marker into the inner label of each
-      // required field, excluding the marketing opt-in whose outer
-      // label has id="LblOpted_In_GDPR__c" (confirmed from live source).
-      formEl.querySelectorAll('.mktoFieldWrap.mktoRequiredField').forEach(function (wrap) {
-        var outerLabel = wrap.querySelector('.mktoLabel');
-        if (!outerLabel) return;
-        if (outerLabel.id === 'LblOpted_In_GDPR__c') return;
-        wrap.querySelectorAll('.mktoLogicalField label').forEach(function (lbl) {
-          if (lbl.querySelector('.eh-required-mark')) return;
-          var req = document.createElement('span');
-          req.setAttribute('aria-hidden', 'true');
-          req.className = 'eh-required-mark';
-          req.textContent = '* ';
-          lbl.insertBefore(req, lbl.firstChild);
-        });
-      });
-
-      // Country field.
-      // Run in a setTimeout so our code fires AFTER any Marketo post-render
-      // processing that may reset the select value.
-      // 1. Always inject a visible "Country" placeholder option at position 0
-      //    so the field is never silently blank.
-      // 2. Try to pre-select COUNTRY_DEFAULT — if it matches an option the
-      //    placeholder is deselected automatically.
-      // Also used here to set visible placeholder labels on other select fields
-      // (Role / Job Title) whose default blank option shows generic "Select" text.
-      //
-      // NOTE: <select> has no native placeholder attribute — browsers ignore it.
-      // The workaround: ensure the blank first option has descriptive text, do NOT
-      // set disabled until AFTER programmatic selection (disabled options can't be
-      // selected programmatically in some browsers), then add .eh-select-placeholder
-      // class so CSS can style it like a text input placeholder (grey text).
-      setTimeout(function () {
-
-        function setSelectLabel(fieldId, text) {
-          var sel = document.getElementById(fieldId);
-          if (!sel) return;
-          // Find existing blank option or the first option if its value is empty/whitespace
-          var ph = sel.querySelector('option[value=""]');
-          if (!ph && sel.options.length > 0) {
-            if (!sel.options[0].value.trim()) ph = sel.options[0];
-          }
-          if (ph) {
-            ph.textContent = text;
-          } else {
-            ph = document.createElement('option');
-            ph.value = '';
-            ph.textContent = text;
-            sel.insertBefore(ph, sel.firstChild);
-          }
-          // Select the placeholder first (before disabling — disabled options
-          // can't be programmatically selected in Firefox/Safari)
-          ph.selected = true;
-          ph.disabled = true;
-          // Add class so CSS can apply placeholder-style colour
-          sel.classList.add('eh-select-placeholder');
-          sel.addEventListener('change', function () {
-            sel.classList.toggle('eh-select-placeholder', !sel.value);
-          });
-        }
-
-        // Role / Job Title — replace generic "Select" with descriptive label.
-        // If the Marketo field ID differs from 'Title', update it here.
-        setSelectLabel('Title', 'Role / Job Title');
-
-        // Country — set visible label, then try to pre-select COUNTRY_DEFAULT.
-        setSelectLabel('Country', 'Country');
-        var countrySelect = document.getElementById('Country');
-        if (countrySelect) {
-          countrySelect.value = COUNTRY_DEFAULT;
-          if (countrySelect.value === COUNTRY_DEFAULT) {
-            // Successfully pre-selected — remove placeholder styling
-            countrySelect.classList.remove('eh-select-placeholder');
-          }
-        }
-      }, 500);
-
-      // Set submit button text BEFORE moving the button row out of formEl.
-      // (After appendChild moves btnRow, formEl.querySelector can no longer find .mktoButton.)
-      var tray    = document.getElementById('eh-form-tray');
-      var btnRow  = formEl.querySelector('.mktoButtonRow');
-      var submitBtn = btnRow ? btnRow.querySelector('.mktoButton') : null;
-      if (submitBtn) submitBtn.textContent = 'Download now';
-      // Re-associate the button with the form after it gets moved outside <form>.
-      // Without this, the button has no form owner and submit never fires.
-      if (submitBtn) submitBtn.setAttribute('form', 'mktoForm_' + FORM_ID);
-
-      // Move submit button row to sticky footer
-      if (tray) {
-        var formBody = tray.querySelector('.eh-form-body');
-        if (formBody) {
-          if (btnRow) {
-            var footer = document.createElement('div');
-            footer.className = 'eh-form-footer';
-            footer.appendChild(btnRow);
-            formBody.insertAdjacentElement('afterend', footer);
-          }
-        }
-      }
-
-      // Green tick + auto-scroll: runs on blur (text) / change (select)
-      var scrollBody = tray ? tray.querySelector('.eh-form-body') : null;
-      var allFields  = Array.from(formEl.querySelectorAll(
-        'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select'
-      ));
-      allFields.forEach(function (field, index) {
-        var evt = field.tagName === 'SELECT' ? 'change' : 'blur';
-        field.addEventListener(evt, function () {
-          // Apply / remove green tick class based on whether field has a value
-          if (field.value) {
-            field.classList.add('mktoValid');
-          } else {
-            field.classList.remove('mktoValid');
-          }
-          // Auto-scroll to next empty field
-          if (!field.value) return;
-          var next = null;
-          for (var i = index + 1; i < allFields.length; i++) {
-            if (!allFields[i].value) { next = allFields[i]; break; }
-          }
-          if (next) {
-            if (scrollBody) {
-              var row = next.closest('.mktoFormRow') || next.parentElement;
-              requestAnimationFrame(function () {
-                row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-              });
-            }
-          }
-        });
-      });
-
-      // Redirect on successful submission
-      form.onSuccess(function () {
-        window.location.href = REDIRECT_URL;
-        return false;
+      updatePlaceholder();
+      sel.addEventListener('change', function () {
+        updatePlaceholder();
+        clearFieldError(sel);
+        if (sel.value) markValid(sel);
       });
     });
 
-    try {
-      MktoForms2.loadForm(MKTO_BASE_URL, MKTO_MUNCHKIN, FORM_ID);
-    } catch (e) {
-      showFormError();
+    // Green tick + inline error clear on text / email / tel fields
+    var scrollBody = document.querySelector('#eh-form-tray .eh-form-body');
+    var textFields = Array.from(form.querySelectorAll(
+      'input[type="text"], input[type="email"], input[type="tel"]'
+    ));
+    textFields.forEach(function (inp, idx) {
+      inp.addEventListener('blur', function () {
+        if (!inp.required) return;
+        if (inp.value.trim()) {
+          markValid(inp);
+        } else {
+          markInvalid(inp);
+        }
+      });
+      inp.addEventListener('input', function () {
+        clearFieldError(inp);
+        // Auto-scroll to next empty required field once this one has a value
+        if (!inp.value.trim()) return;
+        for (var i = idx + 1; i < textFields.length; i++) {
+          if (!textFields[i].value) {
+            requestAnimationFrame(function () {
+              var wrap = textFields[i].closest('.eh-field') || textFields[i];
+              if (scrollBody) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+            break;
+          }
+        }
+      });
+    });
+
+    // Submit
+    form.addEventListener('submit', handleSubmit);
+    var submitBtn = document.getElementById('eh-form-submit');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        handleSubmit(e);
+      });
     }
   }
 
-  // initMarketoForm — loads forms2.min.js if needed, then calls setupMarketoForm.
-  // On production the theme has already loaded the library so we go straight to
-  // setupMarketoForm. On QA/preview pages we inject the script ourselves, which
-  // cuts the form render delay from ~5 s (polling) to < 1 s (network only).
-  function initMarketoForm() {
-    if (typeof MktoForms2 !== 'undefined') {
-      setupMarketoForm();
-      return;
+  function handleSubmit(e) {
+    if (e.preventDefault) e.preventDefault();
+    var form = document.getElementById('eh-download-form');
+    if (!form) return;
+    if (!validateForm(form)) return;
+
+    var submitBtn = document.getElementById('eh-form-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting\u2026';
     }
-    var script = document.createElement('script');
-    script.src = MKTO_BASE_URL + '/js/forms2/js/forms2.min.js';
-    script.onload = setupMarketoForm;
-    script.onerror = showFormError;
-    document.head.appendChild(script);
+
+    var data = new URLSearchParams();
+    new FormData(form).forEach(function (val, key) { data.append(key, val); });
+    // Unchecked checkboxes are absent from FormData — send empty string so
+    // Marketo receives the field and can record the unchecked state.
+    if (!data.has('Opted_In_GDPR__c'))               data.append('Opted_In_GDPR__c', '');
+    if (!data.has('marketingOptInOriginallyConsented')) data.append('marketingOptInOriginallyConsented', '');
+
+    fetch(MKTO_SUBMIT_URL, { method: 'POST', body: data, mode: 'no-cors' })
+      .then(function ()  { window.location.href = REDIRECT_URL; })
+      .catch(function () { window.location.href = REDIRECT_URL; });
   }
 
-  // Fire on DOMContentLoaded — page structure is ready, no need to wait
-  // for images / iframes that delay the window load event.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMarketoForm);
-  } else {
-    initMarketoForm();
+  function validateForm(form) {
+    var valid    = true;
+    var firstBad = null;
+
+    form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(function (inp) {
+      if (!inp.required) return;
+      var ok = inp.value.trim() !== '';
+      if (inp.type === 'email' && ok) ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+      ok ? markValid(inp) : markInvalid(inp);
+      if (!ok) { valid = false; if (!firstBad) firstBad = inp; }
+    });
+
+    form.querySelectorAll('select[required]').forEach(function (sel) {
+      var ok = !!sel.value;
+      ok ? markValid(sel) : markInvalid(sel);
+      if (!ok) { valid = false; if (!firstBad) firstBad = sel; }
+    });
+
+    form.querySelectorAll('input[type="checkbox"][required]').forEach(function (chk) {
+      var wrap = chk.closest('.eh-field-check');
+      if (chk.checked) {
+        if (wrap) wrap.classList.remove('eh-check-invalid');
+      } else {
+        if (wrap) wrap.classList.add('eh-check-invalid');
+        valid = false;
+        if (!firstBad) firstBad = chk;
+      }
+    });
+
+    var errEl = document.getElementById('eh-form-error');
+    if (errEl) errEl.hidden = valid;
+    if (!valid && firstBad) firstBad.focus();
+    return valid;
   }
+
+  function markValid(el) {
+    el.classList.remove('eh-field-invalid');
+    el.classList.add('mktoValid');
+  }
+
+  function markInvalid(el) {
+    el.classList.remove('mktoValid');
+    el.classList.add('eh-field-invalid');
+  }
+
+  function clearFieldError(el) {
+    el.classList.remove('eh-field-invalid');
+  }
+
+  // Munchkin web-activity tracking (async, non-blocking)
+  (function () {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src   = '//munchkin.marketo.net/munchkin.js';
+    s.onload = function () {
+      if (typeof Munchkin !== 'undefined') Munchkin.init(MKTO_MUNCHKIN);
+    };
+    document.head.appendChild(s);
+  })();
 
   // ============================================================
   // BUNDLE INFO POPOVERS
