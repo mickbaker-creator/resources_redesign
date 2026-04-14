@@ -1666,6 +1666,12 @@
   opacity: 1 !important;
 }
 
+/* Select placeholder — JS adds .eh-select-placeholder when blank option is active.
+   Mirrors the grey colour that input::placeholder uses. Removed on user selection. */
+#eh-form-tray select.eh-select-placeholder {
+  color: var(--wp--preset--color--neutral-400) !important;
+}
+
 /* Focus ring */
 #eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus,
 #eh-form-tray select:focus,
