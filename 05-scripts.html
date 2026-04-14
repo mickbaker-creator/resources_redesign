@@ -314,13 +314,23 @@
       // Inject required asterisk into visible checkbox/radio labels.
       // The outer .mktoLabel (which holds Marketo's asterisk) is hidden by our
       // CSS so the asterisk is invisible. We copy it into the visible inner
-      // label instead. Skips any field ID in ASTERISK_EXCLUDE.
+      // label instead.
+      // Rule: only inject * if the checkbox/radio input has the HTML `required`
+      // attribute — this is set by Marketo for genuinely required fields.
+      // Optional fields like marketing consent won't have `required` and are skipped.
+      // ASTERISK_EXCLUDE is a manual override for cases where Marketo incorrectly
+      // marks an optional field as required in the form builder.
       formEl.querySelectorAll('.mktoFormRow').forEach(function (row) {
         var outerAsterix = row.querySelector('.mktoLabel .mktoAsterix');
         if (!outerAsterix) return;
-        var fieldInput = row.querySelector('input, select, textarea');
-        if (fieldInput) {
-          if (ASTERISK_EXCLUDE.indexOf(fieldInput.id) !== -1) return;
+        var checkboxes = row.querySelectorAll('input[type="checkbox"], input[type="radio"]');
+        if (checkboxes.length > 0) {
+          var anyRequired = Array.from(checkboxes).some(function (cb) { return cb.required; });
+          if (!anyRequired) return;
+        }
+        var firstInput = row.querySelector('input, select, textarea');
+        if (firstInput) {
+          if (ASTERISK_EXCLUDE.indexOf(firstInput.id) !== -1) return;
         }
         row.querySelectorAll('.mktoLogicalField label').forEach(function (lbl) {
           var req = document.createElement('span');
@@ -331,11 +341,20 @@
         });
       });
 
-      // Country default — sets COUNTRY_DEFAULT if Marketo hasn't pre-selected a value.
+      // Country default — try to pre-select COUNTRY_DEFAULT.
+      // If the value doesn't take (option text mismatch or Marketo timing),
+      // fall back to injecting a visible "Country" placeholder label so the
+      // field isn't silently blank.
       var countrySelect = document.getElementById('Country');
       if (countrySelect) {
-        if (!countrySelect.value) {
-          countrySelect.value = COUNTRY_DEFAULT;
+        countrySelect.value = COUNTRY_DEFAULT;
+        if (countrySelect.value !== COUNTRY_DEFAULT) {
+          var countryPh = document.createElement('option');
+          countryPh.value = '';
+          countryPh.textContent = 'Country';
+          countryPh.disabled = true;
+          countryPh.selected = true;
+          countrySelect.insertBefore(countryPh, countrySelect.firstChild);
         }
       }
 
