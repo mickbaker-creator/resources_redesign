@@ -350,19 +350,40 @@
       //    so the field is never silently blank.
       // 2. Try to pre-select COUNTRY_DEFAULT — if it matches an option the
       //    placeholder is deselected automatically.
+      // Also used here to set visible placeholder labels on other select fields
+      // (Role / Job Title) whose default blank option shows generic "Select" text.
       setTimeout(function () {
-        var countrySelect = document.getElementById('Country');
-        if (!countrySelect) return;
-        if (!countrySelect.querySelector('option[value=""]')) {
-          var countryPh = document.createElement('option');
-          countryPh.value = '';
-          countryPh.textContent = 'Country';
-          countryPh.disabled = true;
-          countrySelect.insertBefore(countryPh, countrySelect.firstChild);
+        // Sets the text of the blank first option in a select — or inserts one
+        // if the field doesn't already have a blank option.
+        function setSelectLabel(fieldId, text) {
+          var sel = document.getElementById(fieldId);
+          if (!sel) return;
+          var ph = sel.querySelector('option[value=""]');
+          if (ph) {
+            ph.textContent = text;
+            ph.disabled = true;
+          } else {
+            var newPh = document.createElement('option');
+            newPh.value = '';
+            newPh.textContent = text;
+            newPh.disabled = true;
+            newPh.selected = true;
+            sel.insertBefore(newPh, sel.firstChild);
+          }
         }
-        countrySelect.value = COUNTRY_DEFAULT;
-        if (countrySelect.value !== COUNTRY_DEFAULT) {
-          countrySelect.value = '';
+
+        // Role / Job Title — replace generic "Select" with descriptive label.
+        // If the Marketo field ID differs from 'Title', update it here.
+        setSelectLabel('Title', 'Role / Job Title');
+
+        // Country — set visible label, then try to pre-select COUNTRY_DEFAULT.
+        setSelectLabel('Country', 'Country');
+        var countrySelect = document.getElementById('Country');
+        if (countrySelect) {
+          countrySelect.value = COUNTRY_DEFAULT;
+          if (countrySelect.value !== COUNTRY_DEFAULT) {
+            countrySelect.value = '';
+          }
         }
       }, 100);
 
