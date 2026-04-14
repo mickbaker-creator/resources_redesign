@@ -5,7 +5,8 @@
   The overlay and tray use position:fixed so DOM position doesn't
   affect visual rendering, but they must be present before 05-scripts.html.
 
-  MARKETO FORM: ID 1737 | Account: 387-SZZ-170 | Instance: hr.employmenthero.io
+  MARKETO FORM: Configure FORM_ID, MKTO_BASE_URL and MKTO_MUNCHKIN in 05-scripts.html.
+  Also update the <form id="mktoForm_{FORM_ID}"> below to match.
   On successful submission, the user is redirected to the thank-you page below.
 
   Requires: 00-styles.html on the same page.
@@ -70,7 +71,9 @@
         Loading form…
       </div>
 
-      <!-- Marketo form target — Marketo populates this element -->
+      <!-- Marketo form target — Marketo populates this element.
+           IMPORTANT: The ID must match FORM_ID in 05-scripts.html.
+           Format: mktoForm_{FORM_ID} -->
       <form id="mktoForm_1737"></form>
     </div>
 

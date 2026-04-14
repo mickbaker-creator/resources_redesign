@@ -31,9 +31,15 @@
   // MARKETO FORM — update per resource / region.
   // AU instance:  base = 'https://hr.employmenthero.io',  munchkin = '387-SZZ-170'
   // UK instance:  base = 'https://???',                    munchkin = '???'
-  var FORM_ID       = 1737;
-  var MKTO_BASE_URL = 'https://hr.employmenthero.io';
-  var MKTO_MUNCHKIN = '387-SZZ-170';
+  var FORM_ID         = 1737;
+  var MKTO_BASE_URL   = 'https://hr.employmenthero.io';
+  var MKTO_MUNCHKIN   = '387-SZZ-170';
+  var COUNTRY_DEFAULT = 'Australia'; // Change to 'United Kingdom' for UK forms.
+
+  // Marketo field IDs whose required asterisk should be suppressed.
+  // Check the field name in Marketo Form > Field Details and add it here.
+  // Marketing opt-in should NOT be mandatory — only terms consent should show *.
+  var ASTERISK_EXCLUDE = ['mktOptIn'];
 
   function init() {
     initFullBleed();
@@ -308,10 +314,14 @@
       // Inject required asterisk into visible checkbox/radio labels.
       // The outer .mktoLabel (which holds Marketo's asterisk) is hidden by our
       // CSS so the asterisk is invisible. We copy it into the visible inner
-      // label instead.
+      // label instead. Skips any field ID in ASTERISK_EXCLUDE.
       formEl.querySelectorAll('.mktoFormRow').forEach(function (row) {
         var outerAsterix = row.querySelector('.mktoLabel .mktoAsterix');
         if (!outerAsterix) return;
+        var fieldInput = row.querySelector('input, select, textarea');
+        if (fieldInput) {
+          if (ASTERISK_EXCLUDE.indexOf(fieldInput.id) !== -1) return;
+        }
         row.querySelectorAll('.mktoLogicalField label').forEach(function (lbl) {
           var req = document.createElement('span');
           req.setAttribute('aria-hidden', 'true');
@@ -321,10 +331,13 @@
         });
       });
 
-      // Country field — default value is controlled in Marketo's form editor.
-      // Set the field's default to 'Australia' (AU forms) or 'United Kingdom' (UK forms)
-      // via the form field settings in Marketo so it pre-selects the correct country
-      // without JavaScript. No client-side injection needed.
+      // Country default — sets COUNTRY_DEFAULT if Marketo hasn't pre-selected a value.
+      var countrySelect = document.getElementById('Country');
+      if (countrySelect) {
+        if (!countrySelect.value) {
+          countrySelect.value = COUNTRY_DEFAULT;
+        }
+      }
 
       // Set submit button text BEFORE moving the button row out of formEl.
       // (After appendChild moves btnRow, formEl.querySelector can no longer find .mktoButton.)
