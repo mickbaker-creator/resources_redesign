@@ -1,0 +1,253 @@
+<!--
+  WEBINAR TEMPLATE — Form Tray (Block 4 of 5)
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as a Custom HTML block AFTER all content blocks.
+  The overlay and tray use position:fixed so DOM position doesn't
+  affect visual rendering, but they must be present before wbn-05-scripts.html.
+
+  Native HTML form — posts directly to Marketo's submission endpoint.
+  No MktoForms2 dependency. Renders instantly.
+
+  CONFIGURE in wbn-05-scripts.html:
+  · FORM_ID, MKTO_BASE_URL, MKTO_MUNCHKIN — Marketo instance
+  · REDIRECT_URL — thank-you / confirmation page after submission
+  · COUNTRY_DEFAULT — pre-selected country (e.g. 'Australia')
+
+  Requires: wbn-00-styles.html on the same page.
+════════════════════════════════════════════════════════ -->
+<div class="eh-webinar-landing">
+
+  <!-- Backdrop overlay (click to close) -->
+  <div
+    id="eh-form-overlay"
+    class="eh-form-overlay"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Slide-out dialog tray -->
+  <div
+    id="eh-form-tray"
+    class="eh-form-tray"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="eh-form-dialog-title"
+    aria-hidden="true"
+  >
+
+    <!-- Sticky tray header -->
+    <div class="eh-form-header">
+      <div class="eh-form-header-left">
+        <div class="eh-form-icon" aria-hidden="true">
+          <!-- Calendar icon (register) -->
+          <svg focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h2 id="eh-form-dialog-title" class="eh-form-heading">Register for free</h2>
+      </div>
+      <button
+        type="button"
+        id="eh-form-close"
+        class="eh-form-close"
+        data-close-form
+        aria-label="Close registration form"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tray body — scrollable -->
+    <div class="eh-form-body">
+
+      <p class="eh-form-desc">Reserve your spot for the live webinar. You'll receive a calendar invite and reminder emails.</p>
+
+      <form id="eh-register-form" novalidate autocomplete="on">
+
+        <!-- Hidden tracking fields — values injected by wbn-05-scripts.html -->
+        <input type="hidden" name="formid"                      value="">
+        <input type="hidden" name="munchkinId"                  value="">
+        <input type="hidden" name="formSource"                  value="">
+        <input type="hidden" name="Lead_Linking_ID__c"          value="">
+        <input type="hidden" name="GCLID__c"                    value="">
+        <input type="hidden" name="Opt_In_Consent_Message__c"   value="">
+        <input type="hidden" name="wtovariantid"                value="">
+        <input type="hidden" name="honeypot"                    value="">
+
+        <!-- First Name + Last Name (2-column row) -->
+        <div class="eh-form-grid">
+          <div class="eh-field">
+            <input
+              type="text"
+              id="fn-FirstName"
+              name="FirstName"
+              placeholder="First Name"
+              required
+              autocomplete="given-name"
+              aria-required="true"
+            >
+          </div>
+          <div class="eh-field">
+            <input
+              type="text"
+              id="fn-LastName"
+              name="LastName"
+              placeholder="Last Name"
+              required
+              autocomplete="family-name"
+              aria-required="true"
+            >
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="eh-field">
+          <input
+            type="email"
+            id="fn-Email"
+            name="Email"
+            placeholder="Work Email"
+            required
+            autocomplete="email"
+            aria-required="true"
+          >
+          <p class="eh-field-hint">This lets us send your calendar invite and webinar updates.</p>
+        </div>
+
+        <!-- Phone -->
+        <div class="eh-field">
+          <input
+            type="tel"
+            id="fn-Phone"
+            name="Phone"
+            placeholder="Phone Number"
+            autocomplete="tel"
+          >
+        </div>
+
+        <!-- Company -->
+        <div class="eh-field">
+          <input
+            type="text"
+            id="fn-Company"
+            name="Company"
+            placeholder="Company Name"
+            required
+            autocomplete="organization"
+            aria-required="true"
+          >
+        </div>
+
+        <!-- Role / Job Title -->
+        <div class="eh-field">
+          <select
+            id="fn-Job_Title"
+            name="Job_Title_ICP_Categorisation__c"
+            required
+            aria-required="true"
+          >
+            <option value="" disabled selected>Role / Job Title</option>
+            <option value="HR Manager or Administrator">HR Manager or Administrator</option>
+            <option value="Senior Manager or Business Leader">Senior Manager or Business Leader</option>
+            <option value="Payroll Manager or Administrator">Payroll Manager or Administrator</option>
+            <option value="Accountant or Bookkeeper">Accountant or Bookkeeper</option>
+            <option value="Other Employee">Other Employee</option>
+            <option value="Sole Trader">Sole Trader</option>
+          </select>
+        </div>
+
+        <!-- Number of Employees -->
+        <div class="eh-field">
+          <select
+            id="fn-NumberOfEmployees"
+            name="NumberOfEmployees"
+            required
+            aria-required="true"
+          >
+            <option value="" disabled selected>Number of Employees</option>
+            <option value="3">1 - 4</option>
+            <option value="8">5 - 9</option>
+            <option value="15">10 - 20</option>
+            <option value="35">21 - 50</option>
+            <option value="100">51 - 150</option>
+            <option value="200">151 - 300</option>
+            <option value="350">301 - 500</option>
+            <option value="650">501 - 1000</option>
+            <option value="1500">1001+</option>
+          </select>
+        </div>
+
+        <!-- Country — options built by JS from COUNTRY_LIST in wbn-05-scripts.html -->
+        <div class="eh-field">
+          <select
+            id="fn-Country"
+            name="Country"
+            required
+            aria-required="true"
+          >
+            <option value="" disabled>Country</option>
+          </select>
+        </div>
+
+        <!-- Data processing consent — REQUIRED, shows asterisk -->
+        <div class="eh-field-check">
+          <input
+            type="checkbox"
+            id="fn-consent-data"
+            name="Opted_In_GDPR__c"
+            value="yes"
+            required
+            aria-required="true"
+          >
+          <label for="fn-consent-data">
+            <span class="eh-required-mark" aria-hidden="true">* </span>By
+            checking this box, you agree to the processing of data in accordance
+            with Employment Hero's <a href="https://employmenthero.com/legals/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+          </label>
+        </div>
+
+        <!-- Marketing consent — optional, no asterisk -->
+        <div class="eh-field-check">
+          <input
+            type="checkbox"
+            id="fn-consent-marketing"
+            name="marketingOptInOriginallyConsented"
+            value="yes"
+          >
+          <label for="fn-consent-marketing">
+            I consent to receiving marketing communications, promotions/offers
+            and content from <a href="https://employmenthero.com/the-employment-hero-group/" target="_blank" rel="noopener noreferrer">the Employment Hero Group</a>
+            by email, text (including WhatsApp), and social media channels about
+            its products, services or brands.
+          </label>
+        </div>
+
+        <!-- Form-level error summary -->
+        <p id="eh-form-error" class="eh-form-error-msg" role="alert" hidden>
+          Please fill in all required fields above.
+        </p>
+
+      </form>
+
+    </div><!-- /eh-form-body -->
+
+    <!-- Sticky submit footer -->
+    <div class="eh-form-footer">
+      <button
+        type="submit"
+        form="eh-register-form"
+        id="eh-form-submit"
+        class="eh-btn eh-btn-primary eh-btn-block"
+      >
+        Reserve your spot
+      </button>
+    </div>
+
+  </div><!-- /eh-form-tray -->
+
+</div><!-- /eh-webinar-landing -->

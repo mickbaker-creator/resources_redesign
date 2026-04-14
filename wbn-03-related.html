@@ -1,0 +1,137 @@
+<!--
+  WEBINAR TEMPLATE — Related Webinars (Block 3 of 5)
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as a Custom HTML block after wbn-02-content.html.
+  Requires: wbn-00-styles.html on the same page.
+
+  CONFIGURE on this page:
+  · "View all" link href
+  · Each card: href, thumbnail src/alt, badge type, title, description
+  · Live card: date text in eh-video-live span
+  · On-demand card: duration in eh-video-duration span, view count
+
+  BADGE CLASSES (apply one to the span inside .eh-card-video-thumb):
+  · eh-video-live     — red LIVE badge with pulse dot (upcoming)
+  · eh-video-badge    — purple solid badge (on-demand / replay)
+
+  IMAGES: Upload webinar thumbnails to WordPress Media Library
+  and replace the src attributes.
+════════════════════════════════════════════════════════ -->
+<div class="eh-webinar-landing">
+  <section class="eh-related-section" aria-labelledby="wbn-related-heading">
+    <div class="eh-container">
+
+      <div class="eh-related-header">
+        <div>
+          <h2 id="wbn-related-heading" class="eh-related-title">More Webinars</h2>
+          <p class="eh-related-subtitle">Explore other sessions from our experts</p>
+        </div>
+        <!-- PLACEHOLDER: replace # with webinar archive URL -->
+        <a
+          href="#"
+          style="font-size:14px;font-weight:500;color:var(--eh-purple);text-decoration:none;"
+          data-gtm-event="cta_click"
+          data-gtm-label="related_view_all"
+        >
+          View all &#8594;
+        </a>
+      </div>
+
+      <div class="eh-related-grid">
+
+        <!-- Card 1 — PLACEHOLDER: upcoming webinar -->
+        <!-- PLACEHOLDER: replace # with webinar page URL; update thumbnail, title, date -->
+        <a href="#" class="eh-card-video" data-gtm-event="card_click" data-gtm-label="related_card_1">
+          <div class="eh-card-video-thumb">
+            <img
+              src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=480&h=270&fit=crop"
+              alt="Navigating Fair Work Changes in 2026 — webinar thumbnail"
+              width="480" height="270"
+              loading="lazy"
+            >
+            <div class="eh-video-overlay">
+              <div class="eh-play-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <!-- PLACEHOLDER: update date text -->
+            <span class="eh-video-live">Live Apr 2</span>
+          </div>
+          <div style="padding:16px;">
+            <!-- PLACEHOLDER: update title and description -->
+            <h3 class="eh-card-title" style="font-size:14px;">Navigating Fair Work Changes in 2026</h3>
+            <p class="eh-card-desc" style="font-size:12px;margin-top:6px;">Latest Fair Work amendments and workplace policies.</p>
+            <div class="eh-video-meta">
+              <!-- PLACEHOLDER: update date -->
+              <span>Apr 2, 2026</span>
+              <span style="color:var(--eh-purple);font-weight:500;">Register &#8594;</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 2 — PLACEHOLDER: on-demand webinar -->
+        <!-- PLACEHOLDER: replace # with webinar page URL; update thumbnail, title, stats -->
+        <a href="#" class="eh-card-video" data-gtm-event="card_click" data-gtm-label="related_card_2">
+          <div class="eh-card-video-thumb">
+            <img
+              src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=480&h=270&fit=crop"
+              alt="Mastering Performance Reviews — webinar thumbnail"
+              width="480" height="270"
+              loading="lazy"
+            >
+            <div class="eh-video-overlay">
+              <div class="eh-play-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <span class="eh-video-badge">On-demand</span>
+            <!-- PLACEHOLDER: update duration -->
+            <span class="eh-video-duration">45:22</span>
+          </div>
+          <div style="padding:16px;">
+            <!-- PLACEHOLDER: update title and description -->
+            <h3 class="eh-card-title" style="font-size:14px;">Mastering Performance Reviews</h3>
+            <p class="eh-card-desc" style="font-size:12px;margin-top:6px;">Build a culture of continuous feedback with practical frameworks.</p>
+            <div class="eh-video-meta">
+              <!-- PLACEHOLDER: update view count -->
+              <span>1.2k views</span>
+              <span>Watch now</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 3 — PLACEHOLDER: on-demand webinar -->
+        <!-- PLACEHOLDER: replace # with webinar page URL; update thumbnail, title, stats -->
+        <a href="#" class="eh-card-video" data-gtm-event="card_click" data-gtm-label="related_card_3">
+          <div class="eh-card-video-thumb">
+            <img
+              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=480&h=270&fit=crop"
+              alt="Payroll Automation Best Practices — webinar thumbnail"
+              width="480" height="270"
+              loading="lazy"
+            >
+            <div class="eh-video-overlay">
+              <div class="eh-play-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <span class="eh-video-badge">On-demand</span>
+            <!-- PLACEHOLDER: update duration -->
+            <span class="eh-video-duration">38:15</span>
+          </div>
+          <div style="padding:16px;">
+            <!-- PLACEHOLDER: update title and description -->
+            <h3 class="eh-card-title" style="font-size:14px;">Payroll Automation Best Practices</h3>
+            <p class="eh-card-desc" style="font-size:12px;margin-top:6px;">Automate processes to save time and reduce errors.</p>
+            <div class="eh-video-meta">
+              <!-- PLACEHOLDER: update view count -->
+              <span>892 views</span>
+              <span>Watch now</span>
+            </div>
+          </div>
+        </a>
+
+      </div><!-- /eh-related-grid -->
+    </div><!-- /eh-container -->
+  </section>
+</div><!-- /eh-webinar-landing -->

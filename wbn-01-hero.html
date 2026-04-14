@@ -1,0 +1,190 @@
+<!--
+  WEBINAR TEMPLATE — Hero Section (Block 1 of 5)
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as a Custom HTML block AFTER wbn-00-styles.html.
+  Requires: wbn-00-styles.html on the same page.
+
+  CONFIGURE on this page:
+  · Breadcrumb link text and href values
+  · Live-badge label (e.g. "Live Webinar" / "On Demand")
+  · Topic label text
+  · Webinar title and description
+  · Event date, time, duration, and platform strings
+  · Speaker names, roles, and avatar image src/alt
+  · data-countdown attribute — ISO 8601 datetime + offset
+    (e.g. 2026-06-18T10:00:00+10:00 for 10 AM AEST)
+  · Video-preview image src and alt
+  · Register card heading and sub-copy
+  · data-open-form on all CTA buttons to open the form tray
+
+  IMAGES: Upload speaker avatars and video thumbnail to
+  WordPress Media Library and replace the src attributes.
+════════════════════════════════════════════════════════ -->
+<div class="eh-webinar-landing">
+  <section class="eh-webinar-hero">
+    <div class="eh-container">
+
+      <!-- Breadcrumb -->
+      <nav class="eh-breadcrumb-dark" aria-label="Breadcrumb">
+        <!-- PLACEHOLDER: update href values -->
+        <a href="/resources/">Resources</a>
+        <span aria-hidden="true">/</span>
+        <a href="/resources/webinars/">Webinars</a>
+        <span aria-hidden="true">/</span>
+        <!-- PLACEHOLDER: current page title (no link) -->
+        <span aria-current="page">AI Advantage</span>
+      </nav>
+
+      <div class="eh-hero-grid">
+
+        <!-- Left column: event info -->
+        <div>
+          <div style="display:flex;align-items:center;">
+            <!-- PLACEHOLDER: badge label -->
+            <span class="eh-live-badge">
+              <span class="eh-live-dot" aria-hidden="true"></span>
+              Live Webinar
+            </span>
+            <!-- PLACEHOLDER: topic label -->
+            <span class="eh-topic-label-dark">HR Technology</span>
+          </div>
+
+          <!-- PLACEHOLDER: webinar title -->
+          <h1 class="eh-webinar-title">AI Advantage: Your HR Playbook for 2026</h1>
+
+          <!-- PLACEHOLDER: webinar description -->
+          <p class="eh-webinar-desc">
+            Join our experts to explore how AI is reshaping HR processes, from automated
+            candidate screening to intelligent performance management. Walk away with a
+            practical playbook for your team.
+          </p>
+
+          <!-- Event meta -->
+          <div class="eh-event-details">
+            <!-- PLACEHOLDER: update date, time, duration, platform -->
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              March 15, 2026
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              10:00 AM AEDT
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              45 minutes
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Limited seats
+            </span>
+          </div>
+
+          <!-- Speaker preview row -->
+          <!-- PLACEHOLDER: update speaker names, roles, and avatar images -->
+          <div class="eh-speakers-preview" aria-label="Speakers">
+            <div class="eh-speaker-mini">
+              <img
+                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop"
+                alt="Sarah Chen"
+                class="eh-speaker-mini-avatar"
+                width="44" height="44"
+              >
+              <div>
+                <p class="eh-speaker-mini-name">Sarah Chen</p>
+                <p class="eh-speaker-mini-role">Head of Product, Employment Hero</p>
+              </div>
+            </div>
+            <div class="eh-speaker-mini">
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+                alt="Michael Torres"
+                class="eh-speaker-mini-avatar"
+                width="44" height="44"
+              >
+              <div>
+                <p class="eh-speaker-mini-name">Michael Torres</p>
+                <p class="eh-speaker-mini-role">Senior HR Advisor</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Countdown timer -->
+          <!-- PLACEHOLDER: update datetime to the exact webinar start time in ISO 8601
+               e.g. 2026-06-18T10:00:00+10:00 for 10 AM AEST on 18 June 2026 -->
+          <div class="eh-countdown-wrapper">
+            <p class="eh-countdown-label" aria-live="off">Starts in</p>
+            <div
+              class="eh-countdown"
+              data-countdown="2026-03-15T10:00:00+11:00"
+              aria-label="Countdown to webinar start"
+            >
+              <div class="eh-countdown-unit">
+                <div class="eh-countdown-value" data-countdown-days aria-label="days">--</div>
+                <span class="eh-countdown-label-unit" aria-hidden="true">Days</span>
+              </div>
+              <span class="eh-countdown-separator" aria-hidden="true">:</span>
+              <div class="eh-countdown-unit">
+                <div class="eh-countdown-value" data-countdown-hours aria-label="hours">--</div>
+                <span class="eh-countdown-label-unit" aria-hidden="true">Hrs</span>
+              </div>
+              <span class="eh-countdown-separator" aria-hidden="true">:</span>
+              <div class="eh-countdown-unit">
+                <div class="eh-countdown-value" data-countdown-mins aria-label="minutes">--</div>
+                <span class="eh-countdown-label-unit" aria-hidden="true">Min</span>
+              </div>
+              <span class="eh-countdown-separator" aria-hidden="true">:</span>
+              <div class="eh-countdown-unit">
+                <div class="eh-countdown-value" data-countdown-secs aria-label="seconds">--</div>
+                <span class="eh-countdown-label-unit" aria-hidden="true">Sec</span>
+              </div>
+            </div>
+          </div>
+        </div><!-- /left column -->
+
+        <!-- Right column: video thumbnail + register card -->
+        <div>
+          <!-- PLACEHOLDER: replace src and alt with actual webinar preview image -->
+          <div class="eh-video-preview">
+            <img
+              src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=450&fit=crop"
+              alt="Webinar preview — AI Advantage"
+              width="800" height="450"
+            >
+            <div class="eh-video-overlay">
+              <!-- Play button is decorative; real CTA is Register button below -->
+              <button
+                class="eh-play-button"
+                data-open-form
+                aria-label="Register to watch this webinar"
+                data-gtm-event="cta_click"
+                data-gtm-label="hero_play_button"
+              >
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </button>
+              <span class="eh-play-label" aria-hidden="true">Register to watch</span>
+            </div>
+          </div>
+
+          <!-- PLACEHOLDER: update card copy -->
+          <div class="eh-register-card">
+            <h2 class="eh-register-title">Reserve Your Spot</h2>
+            <p class="eh-register-desc">Register now to secure your place. You'll receive a calendar invite and reminder emails.</p>
+            <button
+              class="eh-btn eh-btn-primary eh-btn-lg eh-btn-block"
+              data-open-form
+              aria-expanded="false"
+              aria-controls="eh-form-tray"
+              data-gtm-event="cta_click"
+              data-gtm-label="hero_register_button"
+            >
+              Register Now
+            </button>
+            <p class="eh-register-note">Can't make it live? Register anyway and we'll send you the recording.</p>
+          </div>
+        </div><!-- /right column -->
+
+      </div><!-- /eh-hero-grid -->
+    </div><!-- /eh-container -->
+  </section>
+</div><!-- /eh-webinar-landing -->

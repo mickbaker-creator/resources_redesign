@@ -1,0 +1,482 @@
+<!--
+  WEBINAR TEMPLATE — Scripts (Block 5 of 5)
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as the LAST Custom HTML block on the page,
+  after all other webinar template blocks.
+
+  Handles:
+  · Countdown timer (live tick every second, stops at zero)
+  · Form tray open / close with focus management + focus trap
+  · ARIA state (aria-expanded, aria-hidden) on triggers + tray
+  · dataLayer tracking for all tagged interactions
+  · Native Marketo form submission (no MktoForms2 dependency)
+  · Munchkin web-activity tracking (async, non-blocking)
+
+  CONFIGURE: Update the values in the CONFIG section below.
+
+  NOTE: All && operators have been replaced with nested if()
+  statements, and all block comments use // instead of slash-star
+  to prevent WordPress from corrupting the script on save.
+════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  // ── CONFIGURE PER WEBINAR ────────────────────────────────────
+  var WEBINAR_NAME = 'AI Advantage: Your HR Playbook for 2026';
+  var WEBINAR_TYPE = 'Webinar';
+
+  // PLACEHOLDER: update to your thank-you / confirmation page URL
+  var REDIRECT_URL = 'https://employmenthero.com/thank-you/webinar/';
+
+  // Marketo instance — AU or UK
+  // AU: base = 'https://hr.employmenthero.io', munchkin = '387-SZZ-170'
+  // UK: base = 'https://app-lon02.marketo.com', munchkin = '387-SZZ-210'
+  var FORM_ID       = 1737;
+  var MKTO_BASE_URL = 'https://hr.employmenthero.io';
+  var MKTO_MUNCHKIN = '387-SZZ-170';
+
+  // Country pre-selected on load. Must match an option value in COUNTRY_LIST.
+  var COUNTRY_DEFAULT = 'Australia';
+  // ─────────────────────────────────────────────────────────────
+
+  function init() {
+    initFullBleed();
+    initTracking();
+    initFormTray();
+    initNativeForm();
+    initCountdown();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // ============================================================
+  // FULL-BLEED BREAKOUT
+  // Adds .alignfull to each .wp-block-html wrapper so Gutenberg
+  // expands it to full viewport width.
+  // ============================================================
+  function initFullBleed() {
+    document.querySelectorAll('.eh-webinar-landing').forEach(function (landing) {
+      var block = landing.closest('.wp-block-html');
+      if (block) {
+        block.classList.add('alignfull');
+      }
+    });
+  }
+
+  // ============================================================
+  // DATALAYER TRACKING
+  // Event delegation on document — works with dynamic content.
+  // Tag elements with data-gtm-event and data-gtm-label.
+  // ============================================================
+  function initTracking() {
+    window.dataLayer = window.dataLayer || [];
+
+    document.addEventListener('click', function (e) {
+      var tracked = e.target.closest('[data-gtm-event]');
+      if (!tracked) return;
+
+      window.dataLayer.push({
+        event:             'webinar_page_interaction',
+        interaction_type:  tracked.dataset.gtmEvent  || '',
+        interaction_label: tracked.dataset.gtmLabel  || '',
+        webinar_name:      WEBINAR_NAME,
+        webinar_type:      WEBINAR_TYPE
+      });
+    });
+  }
+
+  // ============================================================
+  // COUNTDOWN TIMER
+  // Reads target datetime from data-countdown attribute on the
+  // .eh-countdown element (ISO 8601 format with timezone offset).
+  // Updates every second. Stops and holds 00s when target passes.
+  // ============================================================
+  function initCountdown() {
+    var countdownEl = document.querySelector('[data-countdown]');
+    if (!countdownEl) return;
+
+    var targetStr = countdownEl.getAttribute('data-countdown');
+    if (!targetStr) return;
+
+    var target = new Date(targetStr).getTime();
+    if (isNaN(target)) return;
+
+    var daysEl  = countdownEl.querySelector('[data-countdown-days]');
+    var hoursEl = countdownEl.querySelector('[data-countdown-hours]');
+    var minsEl  = countdownEl.querySelector('[data-countdown-mins]');
+    var secsEl  = countdownEl.querySelector('[data-countdown-secs]');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      var diff = target - Date.now();
+
+      if (diff <= 0) {
+        if (daysEl)  daysEl.textContent  = '00';
+        if (hoursEl) hoursEl.textContent = '00';
+        if (minsEl)  minsEl.textContent  = '00';
+        if (secsEl)  secsEl.textContent  = '00';
+        return;
+      }
+
+      var days  = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins  = Math.floor((diff % 3600000)  / 60000);
+      var secs  = Math.floor((diff % 60000)    / 1000);
+
+      if (daysEl)  daysEl.textContent  = pad(days);
+      if (hoursEl) hoursEl.textContent = pad(hours);
+      if (minsEl)  minsEl.textContent  = pad(mins);
+      if (secsEl)  secsEl.textContent  = pad(secs);
+
+      setTimeout(tick, 1000);
+    }
+
+    tick();
+  }
+
+  // ============================================================
+  // FORM TRAY
+  // Opens as a slide-in dialog with a backdrop overlay.
+  // Moves focus into the tray on open; returns it on close.
+  // Traps focus while open. Closes on backdrop click or Escape.
+  // ============================================================
+  function initFormTray() {
+    var tray    = document.getElementById('eh-form-tray');
+    var overlay = document.getElementById('eh-form-overlay');
+
+    if (!tray) return;
+    if (!overlay) return;
+
+    var openButtons  = document.querySelectorAll('[data-open-form]');
+    var closeButtons = document.querySelectorAll('[data-close-form]');
+    var lastFocused  = null;
+
+    // ── Open ──
+    function openTray(triggerEl) {
+      lastFocused = triggerEl || document.activeElement;
+
+      tray.classList.add('open');
+      overlay.classList.add('open');
+
+      tray.removeAttribute('aria-hidden');
+      overlay.setAttribute('aria-hidden', 'true');
+
+      document.body.style.overflow = 'hidden';
+
+      openButtons.forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'true');
+      });
+
+      requestAnimationFrame(function () {
+        var first = getFirstFocusable(tray);
+        if (first) first.focus();
+      });
+
+      document.addEventListener('keydown', handleTrapFocus);
+    }
+
+    // ── Close ──
+    function closeTray() {
+      tray.classList.remove('open');
+      overlay.classList.remove('open');
+
+      tray.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      openButtons.forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+
+      document.removeEventListener('keydown', handleTrapFocus);
+
+      if (lastFocused) {
+        if (typeof lastFocused.focus === 'function') {
+          lastFocused.focus();
+          lastFocused = null;
+        }
+      }
+    }
+
+    // ── Focus trap ──
+    function handleTrapFocus(e) {
+      if (e.key === 'Escape') {
+        closeTray();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      var focusableEls = getFocusable(tray);
+      if (!focusableEls.length) return;
+
+      var first = focusableEls[0];
+      var last  = focusableEls[focusableEls.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    // ── Wire up events ──
+    openButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () { openTray(btn); });
+    });
+
+    closeButtons.forEach(function (btn) {
+      btn.addEventListener('click', closeTray);
+    });
+
+    overlay.addEventListener('click', closeTray);
+  }
+
+  // ============================================================
+  // COUNTRY LIST
+  // Used to populate the Country select. COUNTRY_DEFAULT is
+  // pre-selected. Update COUNTRY_DEFAULT for non-AU forms.
+  // ============================================================
+  var COUNTRY_LIST = [
+    'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda',
+    'Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain',
+    'Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan',
+    'Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria',
+    'Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada',
+    'Central African Republic','Chad','Chile','China','Colombia','Comoros',
+    'Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic',
+    'Democratic Republic of the Congo','Denmark','Djibouti','Dominica',
+    'Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea',
+    'Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France',
+    'Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada',
+    'Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras',
+    'Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland',
+    'Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya',
+    'Kiribati','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho',
+    'Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar',
+    'Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands',
+    'Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco',
+    'Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia',
+    'Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger',
+    'Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan',
+    'Palau','Panama','Papua New Guinea','Paraguay','Peru','Philippines',
+    'Poland','Portugal','Qatar','Romania','Russia','Rwanda',
+    'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+    'Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal',
+    'Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia',
+    'Solomon Islands','Somalia','South Africa','South Korea','South Sudan',
+    'Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria',
+    'Taiwan','Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga',
+    'Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda',
+    'Ukraine','United Arab Emirates','United Kingdom','United States',
+    'Uruguay','Uzbekistan','Vanuatu','Venezuela','Vietnam','Yemen',
+    'Zambia','Zimbabwe'
+  ];
+
+  // ============================================================
+  // NATIVE FORM HANDLER
+  // Posts directly to Marketo's form submission endpoint without
+  // MktoForms2. No external JS dependency — renders instantly.
+  // ============================================================
+  var MKTO_SUBMIT_URL = MKTO_BASE_URL + '/index.php/leadCapture/save2';
+
+  function initNativeForm() {
+    var form = document.getElementById('eh-register-form');
+    if (!form) return;
+
+    // Populate hidden tracking fields
+    form.querySelector('[name="formid"]').value     = FORM_ID;
+    form.querySelector('[name="munchkinId"]').value  = MKTO_MUNCHKIN;
+    form.querySelector('[name="formSource"]').value  = window.location.href;
+    form.querySelector('[name="Opt_In_Consent_Message__c"]').value =
+      'By checking this box, you agree to the processing of data in accordance with Employment Hero\'s Privacy Policy.';
+
+    var params = new URLSearchParams(window.location.search);
+    var gclid  = params.get('gclid') || params.get('GCLID') || '';
+    if (gclid) form.querySelector('[name="GCLID__c"]').value = gclid;
+
+    var mktoTrk = '';
+    document.cookie.split('; ').forEach(function (c) {
+      if (c.indexOf('_mkto_trk=') === 0) mktoTrk = c.split('=').slice(1).join('=');
+    });
+    if (mktoTrk) form.querySelector('[name="Lead_Linking_ID__c"]').value = mktoTrk;
+
+    // Build Country select options from COUNTRY_LIST
+    var countrySelect = document.getElementById('fn-Country');
+    if (countrySelect) {
+      COUNTRY_LIST.forEach(function (name) {
+        var opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        if (name === COUNTRY_DEFAULT) opt.selected = true;
+        countrySelect.appendChild(opt);
+      });
+    }
+
+    // Select placeholder styling
+    form.querySelectorAll('select').forEach(function (sel) {
+      function updatePlaceholder() {
+        sel.classList.toggle('eh-select-placeholder', !sel.value);
+      }
+      updatePlaceholder();
+      sel.addEventListener('change', function () {
+        updatePlaceholder();
+        clearFieldError(sel);
+        if (sel.value) markValid(sel);
+      });
+    });
+
+    // Green tick + inline error clear on text/email/tel fields
+    var scrollBody  = document.querySelector('#eh-form-tray .eh-form-body');
+    var textFields  = Array.from(form.querySelectorAll(
+      'input[type="text"], input[type="email"], input[type="tel"]'
+    ));
+    textFields.forEach(function (inp, idx) {
+      inp.addEventListener('blur', function () {
+        if (!inp.required) return;
+        if (inp.value.trim()) {
+          markValid(inp);
+        } else {
+          markInvalid(inp);
+        }
+      });
+      inp.addEventListener('input', function () {
+        clearFieldError(inp);
+        if (!inp.value.trim()) return;
+        for (var i = idx + 1; i < textFields.length; i++) {
+          if (!textFields[i].value) {
+            var nextField = textFields[i];
+            requestAnimationFrame(function () {
+              var wrap = nextField.closest('.eh-field') || nextField;
+              if (scrollBody) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+            break;
+          }
+        }
+      });
+    });
+
+    // Submit
+    form.addEventListener('submit', handleSubmit);
+    var submitBtn = document.getElementById('eh-form-submit');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        handleSubmit(e);
+      });
+    }
+  }
+
+  function handleSubmit(e) {
+    if (e.preventDefault) e.preventDefault();
+    var form = document.getElementById('eh-register-form');
+    if (!form) return;
+    if (!validateForm(form)) return;
+
+    var submitBtn = document.getElementById('eh-form-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting\u2026';
+    }
+
+    var data = new URLSearchParams();
+    new FormData(form).forEach(function (val, key) { data.append(key, val); });
+    // Unchecked checkboxes are absent from FormData — send empty string so
+    // Marketo receives the field and can record the unchecked state.
+    if (!data.has('Opted_In_GDPR__c'))               data.append('Opted_In_GDPR__c', '');
+    if (!data.has('marketingOptInOriginallyConsented')) data.append('marketingOptInOriginallyConsented', '');
+
+    fetch(MKTO_SUBMIT_URL, { method: 'POST', body: data, mode: 'no-cors' })
+      .then(function ()  { window.location.href = REDIRECT_URL; })
+      .catch(function () { window.location.href = REDIRECT_URL; });
+  }
+
+  function validateForm(form) {
+    var valid    = true;
+    var firstBad = null;
+
+    form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(function (inp) {
+      if (!inp.required) return;
+      var ok = inp.value.trim() !== '';
+      if (inp.type === 'email') {
+        if (ok) ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+      }
+      ok ? markValid(inp) : markInvalid(inp);
+      if (!ok) { valid = false; if (!firstBad) firstBad = inp; }
+    });
+
+    form.querySelectorAll('select[required]').forEach(function (sel) {
+      var ok = !!sel.value;
+      ok ? markValid(sel) : markInvalid(sel);
+      if (!ok) { valid = false; if (!firstBad) firstBad = sel; }
+    });
+
+    form.querySelectorAll('input[type="checkbox"][required]').forEach(function (chk) {
+      var wrap = chk.closest('.eh-field-check');
+      if (chk.checked) {
+        if (wrap) wrap.classList.remove('eh-check-invalid');
+      } else {
+        if (wrap) wrap.classList.add('eh-check-invalid');
+        valid = false;
+        if (!firstBad) firstBad = chk;
+      }
+    });
+
+    var errEl = document.getElementById('eh-form-error');
+    if (errEl) errEl.hidden = valid;
+    if (!valid) {
+      if (firstBad) firstBad.focus();
+    }
+    return valid;
+  }
+
+  function markValid(el) {
+    el.classList.remove('eh-field-invalid');
+    el.classList.add('mktoValid');
+  }
+
+  function markInvalid(el) {
+    el.classList.remove('mktoValid');
+    el.classList.add('eh-field-invalid');
+  }
+
+  function clearFieldError(el) {
+    el.classList.remove('eh-field-invalid');
+  }
+
+  function getFocusable(container) {
+    return Array.from(container.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]),' +
+      'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ));
+  }
+
+  function getFirstFocusable(container) {
+    var els = getFocusable(container);
+    return els.length ? els[0] : null;
+  }
+
+  // Munchkin web-activity tracking (async, non-blocking)
+  (function () {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src   = '//munchkin.marketo.net/munchkin.js';
+    s.onload = function () {
+      if (typeof Munchkin !== 'undefined') Munchkin.init(MKTO_MUNCHKIN);
+    };
+    document.head.appendChild(s);
+  })();
+
+})();
+</script>
