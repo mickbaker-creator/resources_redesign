@@ -766,17 +766,8 @@
   border-color: var(--eh-error) !important;
 }
 
-/* Validation — valid: green border + circled tick on text inputs */
-#eh-form-tray input.mktoValid:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]) {
-  border-color: var(--eh-success) !important;
-  padding-right: 44px !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='10' fill='%2316a34a'/%3E%3Cpath d='M5.5 10.5l3 3L15 7' stroke='%23fff' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 14px center !important;
-  background-size: 20px !important;
-}
-
-/* Selects and textareas: green border only */
+/* Validation — valid state: green border only */
+#eh-form-tray input.mktoValid:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
 #eh-form-tray select.mktoValid,
 #eh-form-tray textarea.mktoValid {
   border-color: var(--eh-success) !important;
