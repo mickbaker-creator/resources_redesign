@@ -57,6 +57,30 @@
 
 .eh-webinar-landing a:hover { color: var(--eh-purple-dark); }
 
+/* ── FULL-BLEED BREAKOUT ──────────────────────────────────── */
+/* Gutenberg's .is-layout-constrained applies max-width and    */
+/* auto margins to every direct child of .wp-block-post-       */
+/* content, including Custom HTML block wrappers (.wp-block-   */
+/* html). This rule negates those root-padding margins so each */
+/* webinar block can span the full viewport width.             */
+/*                                                             */
+/* --wp--style--root--padding-left/right are injected by       */
+/* Gutenberg when useRootPaddingAwareAlignments is enabled.    */
+/* Falls back to the theme's default 1.5rem page padding.      */
+/*                                                             */
+/* wbn-05-scripts.html also adds .alignfull to the wrapper     */
+/* as a secondary mechanism for themes that handle it natively.*/
+.wp-block-html:has(> .eh-webinar-landing) {
+  max-width: none !important;
+  width: calc(
+    100% +
+    var(--wp--style--root--padding-left,  1.5rem) +
+    var(--wp--style--root--padding-right, 1.5rem)
+  ) !important;
+  margin-inline-start: calc(-1 * var(--wp--style--root--padding-left,  1.5rem)) !important;
+  margin-inline-end:   calc(-1 * var(--wp--style--root--padding-right, 1.5rem)) !important;
+}
+
 /* ── CONTAINER (scoped to prevent clashing with theme) ────── */
 .eh-webinar-landing .eh-container {
   max-width: 1200px;
