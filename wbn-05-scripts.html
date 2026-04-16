@@ -59,10 +59,10 @@
       var cs = el.parentElement ? window.getComputedStyle(el.parentElement) : null;
       var pl = cs ? parseFloat(cs.paddingLeft)  || 0 : 0;
       var pr = cs ? parseFloat(cs.paddingRight) || 0 : 0;
-      el.style.maxWidth    = 'none';
-      el.style.width       = (pl || pr) ? 'calc(100% + ' + (pl + pr) + 'px)' : '100%';
-      el.style.marginLeft  = pl ? '-' + pl + 'px' : '0';
-      el.style.marginRight = pr ? '-' + pr + 'px' : '0';
+      el.style.setProperty('max-width', 'none', 'important');
+      el.style.setProperty('width', (pl || pr) ? 'calc(100% + ' + (pl + pr) + 'px)' : '100%', 'important');
+      el.style.setProperty('margin-left',  pl ? '-' + pl + 'px' : '0', 'important');
+      el.style.setProperty('margin-right', pr ? '-' + pr + 'px' : '0', 'important');
     });
   }
 
