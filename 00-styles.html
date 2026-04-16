@@ -75,18 +75,20 @@
    This rule overrides that with specificity (0,2,0), which beats
    Gutenberg's (0,1,0) even when both carry !important.
 
-   --wp--style--root--padding-left/right are not set on this site,
-   so no negative-margin gutter offset is needed: width:100% +
-   margin:0 is sufficient to reach full viewport width.
+   The parent (.has-global-padding) applies padding-left/right:24px.
+   width:100% is the content-box width (already minus that padding),
+   so negative margins alone only shift — they don't widen. The fix
+   is width:calc(100%+48px) to reclaim both gutters, then pull left
+   by -24px to realign. Confirmed via console test.
 
    JS in 05-scripts.html applies the same as inline styles
    (belt-and-suspenders — inline beats !important).
 ──────────────────────────────────────────────────────────────── */
 .is-layout-constrained > .eh-resource-landing {
   max-width: none !important;
-  width: 100% !important;
-  margin-left:  0 !important;
-  margin-right: 0 !important;
+  width: calc(100% + 48px) !important;
+  margin-left:  -24px !important;
+  margin-right: -24px !important;
 }
 
 .eh-resource-landing a {

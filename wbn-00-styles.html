@@ -68,17 +68,19 @@
 /* landing directly. Specificity (0,2,0) beats Gutenberg's     */
 /* (0,1,0) even when both carry !important.                    */
 /*                                                             */
-/* Note: --wp--style--root--padding-left/right are not set on  */
-/* this site, so the parent has no gutter padding to offset.   */
-/* width:100% + margin:0 is sufficient to reach full-width.    */
+/* The parent (.has-global-padding) applies padding 24px each  */
+/* side. width:100% is the content-box (already minus padding) */
+/* so negative margins alone only shift, not widen. Fix:       */
+/* width:calc(100%+48px) reclaims both gutters; margin-left    */
+/* -24px realigns. Confirmed via console test.                 */
 /*                                                             */
-/* wbn-05-scripts.html applies the same overrides as inline     */
+/* wbn-05-scripts.html applies the same overrides as inline    */
 /* styles (belt-and-suspenders; inline beats !important).      */
 .is-layout-constrained > .eh-webinar-landing {
   max-width: none !important;
-  width: 100% !important;
-  margin-left:  0 !important;
-  margin-right: 0 !important;
+  width: calc(100% + 48px) !important;
+  margin-left:  -24px !important;
+  margin-right: -24px !important;
 }
 
 /* ── CONTAINER (scoped to prevent clashing with theme) ────── */
