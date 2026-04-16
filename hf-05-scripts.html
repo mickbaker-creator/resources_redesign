@@ -1,0 +1,323 @@
+<!--
+  WEBINAR TEMPLATE — Scripts (Block 5 of 5)
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as the LAST Custom HTML block on the page,
+  after all other webinar template blocks.
+
+  Handles:
+  · Countdown timer (live tick every second, stops at zero)
+  · Form tray open / close with focus management + focus trap
+  · ARIA state (aria-expanded, aria-hidden) on triggers + tray
+  · dataLayer tracking for all tagged interactions
+
+  Form submission is handled by Employment Hero's marketo-form-v2
+  WordPress plugin via the data-marketo-form JSON attribute in
+  wbn-04-form-tray.html — no MktoForms2 wiring needed here.
+
+  CONFIGURE: Update the values in the CONFIG section below.
+
+  NOTE: All && operators have been replaced with nested if()
+  statements, and all block comments use // instead of slash-star
+  to prevent WordPress from corrupting the script on save.
+════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  // ── CONFIGURE PER WEBINAR ────────────────────────────────────
+  var WEBINAR_NAME = 'The True Cost Of Employment: A Smarter Way Forward';
+  var WEBINAR_TYPE = 'Webinar';
+  // Marketo form_id, base_url, munchkin_id, and thank_you_page_url
+  // are configured in the data-marketo-form JSON in hf-04-form-tray.html.
+  // ─────────────────────────────────────────────────────────────
+
+  function init() {
+    initFullBleed();
+    initTracking();
+    initFormTray();
+    initSelectLabels();
+    initCountdown();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // ============================================================
+  // FULL-BLEED BREAKOUT
+  // On Employment Hero's WP setup, Custom HTML blocks render
+  // as direct children of .is-layout-constrained with no
+  // .wp-block-html wrapper. Apply overrides directly to each
+  // .eh-webinar-landing element. Inline styles win over any
+  // !important in external stylesheets, so this is the most
+  // reliable fallback alongside the CSS rule in wbn-00-styles.
+  // ============================================================
+  function initFullBleed() {
+    document.querySelectorAll('.eh-webinar-landing').forEach(function (el) {
+      var cs = el.parentElement ? window.getComputedStyle(el.parentElement) : null;
+      var pl = cs ? parseFloat(cs.paddingLeft)  || 0 : 0;
+      var pr = cs ? parseFloat(cs.paddingRight) || 0 : 0;
+      el.style.setProperty('max-width', 'none', 'important');
+      el.style.setProperty('width', (pl || pr) ? 'calc(100% + ' + (pl + pr) + 'px)' : '100%', 'important');
+      el.style.setProperty('margin-left',  pl ? '-' + pl + 'px' : '0', 'important');
+      el.style.setProperty('margin-right', pr ? '-' + pr + 'px' : '0', 'important');
+    });
+  }
+
+  // ============================================================
+  // DATALAYER TRACKING
+  // Event delegation on document — works with dynamic content.
+  // Tag elements with data-gtm-event and data-gtm-label.
+  // ============================================================
+  function initTracking() {
+    window.dataLayer = window.dataLayer || [];
+
+    document.addEventListener('click', function (e) {
+      var tracked = e.target.closest('[data-gtm-event]');
+      if (!tracked) return;
+
+      window.dataLayer.push({
+        event:             'webinar_page_interaction',
+        interaction_type:  tracked.dataset.gtmEvent  || '',
+        interaction_label: tracked.dataset.gtmLabel  || '',
+        webinar_name:      WEBINAR_NAME,
+        webinar_type:      WEBINAR_TYPE
+      });
+    });
+  }
+
+  // ============================================================
+  // COUNTDOWN TIMER
+  // Reads target datetime from data-countdown attribute on the
+  // .eh-countdown element (ISO 8601 format with timezone offset).
+  // Updates every second. Stops and holds 00s when target passes.
+  // ============================================================
+  function initCountdown() {
+    var countdownEl = document.querySelector('[data-countdown]');
+    if (!countdownEl) return;
+
+    var targetStr = countdownEl.getAttribute('data-countdown');
+    if (!targetStr) return;
+
+    var target = new Date(targetStr).getTime();
+    if (isNaN(target)) return;
+
+    var daysEl  = countdownEl.querySelector('[data-countdown-days]');
+    var hoursEl = countdownEl.querySelector('[data-countdown-hours]');
+    var minsEl  = countdownEl.querySelector('[data-countdown-mins]');
+    var secsEl  = countdownEl.querySelector('[data-countdown-secs]');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    var wrapper = countdownEl.closest('.eh-countdown-wrapper');
+
+    function tick() {
+      var diff = target - Date.now();
+
+      if (diff <= 0) {
+        // Webinar has passed — show on-demand badge instead of zeroed digits.
+        if (wrapper) {
+          wrapper.classList.add('is-past');
+          wrapper.style.visibility = 'visible';
+        }
+        return;
+      }
+
+      var days  = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins  = Math.floor((diff % 3600000)  / 60000);
+      var secs  = Math.floor((diff % 60000)    / 1000);
+
+      if (daysEl)  daysEl.textContent  = pad(days);
+      if (hoursEl) hoursEl.textContent = pad(hours);
+      if (minsEl)  minsEl.textContent  = pad(mins);
+      if (secsEl)  secsEl.textContent  = pad(secs);
+
+      // Digits are set — reveal the wrapper on the first tick.
+      if (wrapper) wrapper.style.visibility = 'visible';
+
+      setTimeout(tick, 1000);
+    }
+
+    tick();
+  }
+
+  // ============================================================
+  // FORM TRAY
+  // Opens as a slide-in dialog with a backdrop overlay.
+  // Moves focus into the tray on open; returns it on close.
+  // Traps focus while open. Closes on backdrop click or Escape.
+  // ============================================================
+  function initFormTray() {
+    var tray    = document.getElementById('eh-form-tray');
+    var overlay = document.getElementById('eh-form-overlay');
+
+    if (!tray) return;
+    if (!overlay) return;
+
+    var openButtons  = document.querySelectorAll('[data-open-form]');
+    var closeButtons = document.querySelectorAll('[data-close-form]');
+    var lastFocused  = null;
+
+    // ── Open ──
+    function openTray(triggerEl) {
+      lastFocused = triggerEl || document.activeElement;
+
+      tray.classList.add('open');
+      overlay.classList.add('open');
+
+      tray.removeAttribute('aria-hidden');
+      overlay.setAttribute('aria-hidden', 'true');
+
+      document.body.style.overflow = 'hidden';
+
+      openButtons.forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'true');
+      });
+
+      requestAnimationFrame(function () {
+        var first = getFirstFocusable(tray);
+        if (first) first.focus();
+      });
+
+      document.addEventListener('keydown', handleTrapFocus);
+    }
+
+    // ── Close ──
+    function closeTray() {
+      tray.classList.remove('open');
+      overlay.classList.remove('open');
+
+      tray.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      openButtons.forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+
+      document.removeEventListener('keydown', handleTrapFocus);
+
+      if (lastFocused) {
+        if (typeof lastFocused.focus === 'function') {
+          lastFocused.focus();
+          lastFocused = null;
+        }
+      }
+    }
+
+    // ── Focus trap ──
+    function handleTrapFocus(e) {
+      if (e.key === 'Escape') {
+        closeTray();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      var focusableEls = getFocusable(tray);
+      if (!focusableEls.length) return;
+
+      var first = focusableEls[0];
+      var last  = focusableEls[focusableEls.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    // ── Wire up events ──
+    openButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () { openTray(btn); });
+    });
+
+    closeButtons.forEach(function (btn) {
+      btn.addEventListener('click', closeTray);
+    });
+
+    overlay.addEventListener('click', closeTray);
+  }
+
+  // ============================================================
+  // SELECT PLACEHOLDER INJECTION
+  // <select> has no placeholder attribute (browser limitation).
+  // After Marketo renders, this reads each select's hidden .mktoLabel
+  // text, ensures a blank disabled first option exists using that text,
+  // and applies .eh-select-placeholder (grey colour) while no real
+  // value is chosen — matching the appearance of input::placeholder.
+  // ============================================================
+  function initSelectLabels() {
+    var tray = document.getElementById('eh-form-tray');
+    if (!tray) return;
+
+    var attempts = 0;
+    var timer = setInterval(function () {
+      attempts++;
+      var rows = tray.querySelectorAll('.mktoFormRow');
+
+      if (rows.length || attempts >= 50) {
+        clearInterval(timer);
+
+        rows.forEach(function (row) {
+          var sel = row.querySelector('select');
+          if (!sel) return;
+
+          // Read the label text Marketo set (it's hidden in the DOM).
+          var labelEl = row.querySelector('.mktoLabel');
+          var labelText = labelEl ? labelEl.textContent.replace(/\*/g, '').trim() : '';
+
+          // If the first option has a real value, prepend a blank placeholder.
+          var firstOpt = sel.options[0];
+          if (firstOpt && firstOpt.value !== '') {
+            var blank = document.createElement('option');
+            blank.value    = '';
+            blank.disabled = true;
+            blank.selected = true;
+            blank.textContent = labelText || 'Select\u2026';
+            sel.insertBefore(blank, firstOpt);
+          } else if (firstOpt && labelText) {
+            // Blank option already exists — replace its text with the label.
+            firstOpt.textContent = labelText;
+          }
+
+          // Grey colour while placeholder is active; normal once user picks.
+          function syncClass() {
+            if (sel.value === '') {
+              sel.classList.add('eh-select-placeholder');
+            } else {
+              sel.classList.remove('eh-select-placeholder');
+            }
+          }
+          syncClass();
+          sel.addEventListener('change', syncClass);
+        });
+      }
+    }, 200);
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  function getFocusable(container) {
+    return Array.from(container.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]),' +
+      'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ));
+  }
+
+  function getFirstFocusable(container) {
+    var els = getFocusable(container);
+    return els.length ? els[0] : null;
+  }
+
+})();
+</script>

@@ -1,0 +1,94 @@
+<!--
+  WEBINAR TEMPLATE — Form Tray (Block 4 of 5)
+  HeroForce: The True Cost Of Employment: A Smarter Way Forward
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as a Custom HTML block AFTER all content blocks.
+  The overlay and tray use position:fixed so DOM position doesn't
+  affect visual rendering, but they must be present before hf-05-scripts.html.
+
+  Uses Employment Hero's marketo-form-v2 WordPress plugin.
+  The plugin renders and submits the Marketo form automatically.
+
+  CONFIGURE the data-marketo-form JSON attribute in the body below:
+  · form_id — Marketo form ID for this webinar
+  · base_url / munchkin_id — Marketo instance (AU or UK)
+  · thank_you_page_url — confirmation page after submission
+      ⚠ After the page goes live, submit the form once and copy the
+        full thank-you URL (including ?origin=...&origin_id=...) from
+        the browser address bar. Hard-code that URL here — the
+        origin_id is static and does not change per session.
+
+  Requires: hf-00-styles.html on the same page.
+════════════════════════════════════════════════════════ -->
+<div class="eh-webinar-landing">
+
+  <!-- Backdrop overlay (click to close) -->
+  <div
+    id="eh-form-overlay"
+    class="eh-form-overlay"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Slide-out dialog tray -->
+  <div
+    id="eh-form-tray"
+    class="eh-form-tray"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="eh-form-dialog-title"
+    aria-hidden="true"
+  >
+
+    <!-- Sticky tray header -->
+    <div class="eh-form-header">
+      <div class="eh-form-header-left">
+        <div class="eh-form-icon" aria-hidden="true">
+          <!-- Calendar icon (register) -->
+          <svg focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h2 id="eh-form-dialog-title" class="eh-form-heading">Register for free</h2>
+      </div>
+      <button
+        type="button"
+        id="eh-form-close"
+        class="eh-form-close"
+        data-close-form
+        aria-label="Close registration form"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tray body — scrollable -->
+    <div class="eh-form-body">
+
+      <!-- Loading indicator — auto-hides once Marketo renders the form -->
+      <div class="eh-form-loading" aria-live="polite">Loading registration form&hellip;</div>
+
+      <!-- Marketo form-v2 container.
+           Rendered by Employment Hero's marketo-form-v2 WordPress plugin.
+           CONFIGURE: update form_id and thank_you_page_url for each webinar. -->
+      <div
+        class="eh_marketo_form-container_v2"
+        data-marketo-form='{"is_multi_steps":false,"form_data":[{"base_url":"//hr.employmenthero.io","munchkin_id":"387-SZZ-170","form_id":"1739","css_classes":""}],"submit_text":"Reserve your spot","success_handling_method":"thank_you_page","thank_you_page_url":"https://employmenthero.com/thank-you/webinar/","progress_indicator_type":"progress-bar","enable_revenue_hero":false}'
+      ></div>
+
+    </div><!-- /eh-form-body -->
+
+  </div><!-- /eh-form-tray -->
+
+</div><!-- /eh-webinar-landing -->
+
+<!-- marketo-form-v2 plugin script — reads data-marketo-form and boots MktoForms2.
+     Auto-loaded by WordPress when a native marketo-form-v2 block is on the page,
+     but must be loaded manually when using a Custom HTML block.
+     If this 404s after a plugin update, copy the new URL from any EH page source. -->
+<script src="https://employmenthero.com/wp-content/plugins/employmentherocom2025-blocks/build/marketo-form-v2/view.js?ver=260248ac2ef7f3a763b0" defer></script>

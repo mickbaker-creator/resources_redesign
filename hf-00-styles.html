@@ -1,0 +1,972 @@
+<!--
+  WEBINAR TEMPLATE — Base Styles (Block 0 of 5)
+  ══════════════════════════════════════════════════════════════
+  WordPress: Paste as the FIRST Custom HTML block on the page.
+
+  Contains all CSS for blocks 01–05. No external stylesheet
+  dependencies — uses its own CSS variables (not WordPress presets).
+
+  Requires: nothing. Self-contained.
+══════════════════════════════════════════════════════════════ -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+/* ── CSS VARIABLES ────────────────────────────────────────── */
+:root {
+  --eh-purple:       #7622D7;
+  --eh-purple-light: #EDE5F9;
+  --eh-purple-dark:  #5A1BA6;
+  --eh-black:        #1A1A1A;
+  --eh-gray-900:     #2D2D2D;
+  --eh-gray-700:     #525252;
+  --eh-gray-500:     #737373;
+  --eh-gray-300:     #D4D4D4;
+  --eh-gray-100:     #F5F5F5;
+  --eh-white:        #FFFFFF;
+  --eh-border:       #E5E5E5;
+  --eh-error:        #DC2626;
+  --eh-success:      #16A34A;
+  --font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius:    12px;
+  --radius-sm:  8px;
+  --shadow:     0 4px 12px -2px rgba(0,0,0,0.08), 0 2px 6px -2px rgba(0,0,0,0.04);
+  --shadow-lg:  0 12px 40px -8px rgba(118,34,215,0.15), 0 4px 12px -4px rgba(0,0,0,0.08);
+}
+
+/* ── RESET & BASE ─────────────────────────────────────────── */
+.eh-webinar-landing *,
+.eh-webinar-landing *::before,
+.eh-webinar-landing *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.eh-webinar-landing {
+  font-family: var(--font-family);
+  color: var(--eh-black);
+  line-height: 1.6;
+  background: var(--eh-white);
+}
+
+.eh-webinar-landing a {
+  color: var(--eh-purple);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.eh-webinar-landing a:hover { color: var(--eh-purple-dark); }
+
+/* ── FULL-BLEED BREAKOUT ──────────────────────────────────── */
+/* On Employment Hero's WP setup, Custom HTML block content    */
+/* renders as a DIRECT child of .wp-block-post-content with    */
+/* no .wp-block-html wrapper. Gutenberg's .is-layout-          */
+/* constrained rule applies max-width (81.25rem = 1300px) and  */
+/* margin:auto to every direct child that lacks .alignfull.    */
+/*                                                             */
+/* This rule overrides those constraints on .eh-webinar-       */
+/* landing directly. Specificity (0,2,0) beats Gutenberg's     */
+/* (0,1,0) even when both carry !important.                    */
+/*                                                             */
+/* The parent (.has-global-padding) applies padding 24px each  */
+/* side. width:100% is the content-box (already minus padding) */
+/* so negative margins alone only shift, not widen. Fix:       */
+/* width:calc(100%+48px) reclaims both gutters; margin-left    */
+/* -24px realigns. Confirmed via console test.                 */
+/*                                                             */
+/* wbn-05-scripts.html applies the same overrides as inline    */
+/* styles (belt-and-suspenders; inline beats !important).      */
+.is-layout-constrained > .eh-webinar-landing {
+  max-width: none !important;
+  width: calc(100% + 48px) !important;
+  margin-left:  -24px !important;
+  margin-right: -24px !important;
+}
+
+/* ── CONTAINER (scoped to prevent clashing with theme) ────── */
+.eh-webinar-landing .eh-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── BUTTONS ──────────────────────────────────────────────── */
+.eh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  border: none;
+}
+
+.eh-btn-primary            { background: var(--eh-purple) !important; color: #FFFFFF !important; }
+.eh-btn-primary:hover      { background: var(--eh-purple-dark) !important; color: #FFFFFF !important; }
+.eh-btn-outline            { background: transparent; color: var(--eh-gray-700); border: 1px solid var(--eh-border); }
+.eh-btn-outline:hover      { border-color: var(--eh-purple); color: var(--eh-purple); }
+.eh-btn-lg                 { padding: 16px 32px; font-size: 16px; }
+.eh-btn-sm                 { padding: 10px 16px; font-size: 13px; }
+.eh-btn-block              { width: 100%; }
+
+/* ── HERO SECTION (DARK) ──────────────────────────────────── */
+.eh-webinar-hero {
+  background: linear-gradient(135deg, #1A1A1A 0%, #0D0D0D 50%, #1A1A1A 100%);
+  padding: 56px 0 72px;
+  position: relative;
+  overflow: hidden;
+}
+
+.eh-webinar-hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(118,34,215,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.eh-webinar-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  right: 10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(118,34,215,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.eh-breadcrumb-dark          { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+.eh-breadcrumb-dark a        { color: rgba(255,255,255,0.5); text-decoration: none; }
+.eh-breadcrumb-dark a:hover  { color: var(--eh-white); }
+.eh-breadcrumb-dark span     { margin: 0 8px; }
+
+.eh-hero-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.eh-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(118,34,215,0.2);
+  color: var(--eh-purple);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.eh-live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--eh-purple);
+  border-radius: 50%;
+  animation: wbn-pulse 2s infinite;
+}
+
+@keyframes wbn-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.eh-topic-label-dark {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-left: 12px;
+}
+
+.eh-webinar-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--eh-white);
+  line-height: 1.12;
+  margin: 20px 0;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.eh-webinar-desc {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.eh-event-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 32px;
+}
+
+.eh-event-details span { display: flex; align-items: center; gap: 6px; }
+.eh-event-details svg  { width: 16px; height: 16px; }
+
+.eh-speakers-preview {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.eh-speaker-mini         { display: flex; align-items: center; gap: 12px; }
+.eh-speaker-mini-avatar  { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(118,34,215,0.4); }
+.eh-speaker-mini-name    { font-size: 14px; font-weight: 500; color: var(--eh-white); }
+.eh-speaker-mini-role    { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+/* ── COUNTDOWN TIMER ──────────────────────────────────────── */
+.eh-countdown-wrapper { position: relative; z-index: 1; visibility: hidden; }
+
+.eh-countdown-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 16px;
+}
+
+.eh-countdown {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 20px 24px;
+  backdrop-filter: blur(8px);
+}
+
+.eh-countdown-unit  { display: flex; flex-direction: column; align-items: center; }
+
+.eh-countdown-value {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(118,34,215,0.2) 0%, rgba(118,34,215,0.1) 100%);
+  border: 1px solid rgba(118,34,215,0.4);
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--eh-white);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 20px rgba(118,34,215,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.eh-countdown-label-unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.eh-countdown-separator {
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(118,34,215,0.6);
+  margin-bottom: 24px;
+}
+
+/* On-demand badge — hidden until JS adds .is-past to the wrapper.
+   Rendered as a <button> so it opens the form on click. */
+.eh-on-demand-badge {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  color: var(--eh-white);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-family);
+  text-align: left;
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.eh-on-demand-badge:hover { background: rgba(255,255,255,0.2); }
+.eh-on-demand-badge svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Past webinar state — swap countdown digits for on-demand badge */
+.eh-countdown-wrapper.is-past .eh-countdown-label,
+.eh-countdown-wrapper.is-past .eh-countdown { display: none; }
+.eh-countdown-wrapper.is-past .eh-on-demand-badge { display: flex; }
+
+/* ── HERO RIGHT COLUMN: VIDEO PREVIEW + REGISTER ─────────── */
+.eh-video-preview {
+  position: relative;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.eh-video-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.eh-video-preview .eh-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(26,26,26,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.eh-play-button {
+  width: 64px;
+  height: 64px;
+  background: var(--eh-purple);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(118,34,215,0.4);
+  transition: transform 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.eh-play-button:hover { transform: scale(1.1); }
+.eh-play-button svg   { width: 24px; height: 24px; color: var(--eh-white); margin-left: 2px; }
+
+.eh-play-label {
+  background: rgba(255,255,255,0.9);
+  color: var(--eh-black);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.eh-register-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-top: 2px solid var(--eh-purple);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+
+.eh-register-title  { font-size: 16px; font-weight: 600; color: var(--eh-white); margin-bottom: 8px; }
+.eh-register-desc   { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+.eh-register-note   { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 12px; }
+
+/* ── CONTENT SECTION ──────────────────────────────────────── */
+.eh-content-section { padding: 48px 0; }
+
+.eh-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+}
+
+.eh-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--eh-black);
+  margin-bottom: 20px;
+}
+
+/* ── TAKEAWAYS LIST ───────────────────────────────────────── */
+.eh-takeaway-list { list-style: none; }
+
+.eh-takeaway-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--eh-white);
+  border: 1px solid var(--eh-border);
+  border-left: 2px solid var(--eh-purple);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+
+.eh-takeaway-item img  { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; }
+.eh-takeaway-item span { font-size: 14px; color: var(--eh-black); }
+
+/* ── SPEAKERS GRID ────────────────────────────────────────── */
+.eh-speakers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.eh-speaker-card {
+  background: var(--eh-white);
+  border: 1px solid var(--eh-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+
+.eh-speaker-card:hover { border-color: var(--eh-purple); }
+.eh-speaker-avatar     { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(118,34,215,0.3); margin-bottom: 16px; }
+.eh-speaker-name       { font-size: 16px; font-weight: 600; color: var(--eh-black); margin-bottom: 4px; }
+.eh-speaker-role       { font-size: 14px; color: var(--eh-purple); margin-bottom: 12px; }
+.eh-speaker-bio        { font-size: 14px; color: var(--eh-gray-700); line-height: 1.6; margin-bottom: 16px; }
+
+.eh-speaker-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--eh-purple);
+  text-decoration: none;
+}
+
+.eh-speaker-link svg { width: 12px; height: 12px; }
+
+/* ── SESSION OVERVIEW ─────────────────────────────────────── */
+.eh-session-content             { margin-top: 40px; }
+.eh-session-content h3          { font-size: 18px; font-weight: 600; color: var(--eh-black); margin-top: 28px; margin-bottom: 12px; }
+.eh-session-content h3:first-child { margin-top: 0; }
+.eh-session-content p           { font-size: 16px; color: var(--eh-gray-700); line-height: 1.7; margin-bottom: 16px; }
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.eh-sidebar       { position: sticky; top: 80px; align-self: start; }
+.eh-sidebar-card  { background: var(--eh-white); border: 1px solid var(--eh-border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.eh-sidebar-title { font-size: 14px; font-weight: 600; color: var(--eh-black); margin-bottom: 16px; }
+
+.eh-sidebar-details      { list-style: none; }
+.eh-sidebar-details li   { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--eh-gray-500); margin-bottom: 12px; }
+.eh-sidebar-details li svg { width: 16px; height: 16px; }
+
+.eh-sidebar-cta          { background: var(--eh-purple-light); border: 1px solid rgba(118,34,215,0.2); border-radius: var(--radius); padding: 20px; }
+.eh-sidebar-cta-title    { font-size: 14px; font-weight: 600; color: var(--eh-black); margin-bottom: 8px; }
+.eh-sidebar-cta-desc     { font-size: 13px; color: var(--eh-gray-700); margin-bottom: 16px; }
+
+/* ── VIDEO CARDS (related section) ───────────────────────── */
+.eh-card-video {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--eh-white);
+  border: 1px solid var(--eh-border);
+  transition: all 0.3s ease;
+  display: block;
+  text-decoration: none;
+}
+
+.eh-card-video:hover { border-color: rgba(118,34,215,0.3); box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+
+.eh-card-video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.eh-card-video-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.eh-card-video:hover .eh-card-video-thumb img { transform: scale(1.05); }
+
+.eh-card-video-thumb .eh-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eh-play-btn {
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.eh-play-btn svg { width: 24px; height: 24px; color: var(--eh-purple); margin-left: 3px; }
+.eh-card-video:hover .eh-play-btn { transform: scale(1.1); }
+
+.eh-video-duration {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(0,0,0,0.85); color: var(--eh-white);
+  font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 4px;
+}
+
+.eh-video-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: var(--eh-purple); color: var(--eh-white);
+  font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 4px;
+}
+
+.eh-video-live {
+  position: absolute; top: 10px; left: 10px;
+  background: #DC2626; color: var(--eh-white);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 4px 8px; border-radius: 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.eh-video-live::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--eh-white);
+  border-radius: 50%;
+  animation: wbn-live-pulse 1.5s infinite;
+}
+
+@keyframes wbn-live-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.eh-video-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--eh-gray-500); margin-top: 8px;
+}
+
+/* ── RELATED WEBINARS SECTION ─────────────────────────────── */
+.eh-related-section {
+  padding: 48px 0;
+  background: var(--eh-gray-100);
+  border-top: 1px solid var(--eh-border);
+}
+
+.eh-related-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.eh-related-title    { font-size: 20px; font-weight: 700; color: var(--eh-black); }
+.eh-related-subtitle { font-size: 14px; color: var(--eh-gray-500); margin-top: 4px; }
+
+.eh-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .eh-hero-grid        { grid-template-columns: 1fr; }
+  .eh-content-grid     { grid-template-columns: 1fr; }
+  .eh-sidebar          { position: static; }
+  .eh-speakers-grid    { grid-template-columns: 1fr; }
+  .eh-related-grid     { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .eh-webinar-title    { font-size: 28px; }
+  .eh-webinar-desc     { font-size: 16px; }
+  .eh-countdown        { flex-wrap: wrap; justify-content: center; }
+  .eh-speakers-preview { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .eh-related-grid     { grid-template-columns: 1fr; }
+  .eh-form-grid        { grid-template-columns: 1fr; }
+}
+
+/* ── FORM SLIDE-OUT TRAY ──────────────────────────────────── */
+.eh-form-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,26,0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 9998;
+}
+
+.eh-form-overlay.open { opacity: 1; visibility: visible; }
+
+.eh-form-tray {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background: var(--eh-white);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+}
+
+.eh-form-tray.open { transform: translateX(0); }
+
+.eh-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--eh-border);
+  position: sticky;
+  top: 0;
+  background: var(--eh-white);
+  z-index: 1;
+}
+
+.eh-form-header-left { display: flex; align-items: center; gap: 12px; }
+
+.eh-form-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(118,34,215,0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.eh-form-icon svg { width: 18px; height: 18px; color: var(--eh-purple); }
+
+.eh-form-heading { font-size: 16px; font-weight: 600; color: var(--eh-black); }
+
+.eh-form-close {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.eh-form-close:hover,
+.eh-form-close:focus-visible { background: var(--eh-gray-100); }
+.eh-form-close svg { width: 20px; height: 20px; color: var(--eh-gray-500); }
+
+.eh-form-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.eh-form-desc { font-size: 14px; color: var(--eh-gray-500); margin-bottom: 24px; }
+
+/* ── MARKETO FORM v2 OVERRIDES ────────────────────────────────
+   Scoped to #eh-form-tray. Styles the MktoForms2 output rendered
+   by Employment Hero's marketo-form-v2 WordPress plugin.
+────────────────────────────────────────────────────────────── */
+
+/* Box-sizing reset */
+#eh-form-tray .mktoForm,
+#eh-form-tray .mktoForm * {
+  box-sizing: border-box;
+}
+
+/* Form wrapper */
+#eh-form-tray .mktoForm {
+  width: 100% !important;
+  padding: 0 !important;
+  font-family: var(--font-family) !important;
+  font-size: 14px !important;
+}
+
+/* Spacers Marketo injects — hide */
+#eh-form-tray .mktoOffset,
+#eh-form-tray .mktoGutter,
+#eh-form-tray .mktoClear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Fieldset */
+#eh-form-tray .mktoForm fieldset {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+
+/* Rows — full-width, spaced */
+#eh-form-tray .mktoFormRow {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+  margin-bottom: 16px !important;
+}
+
+/* Columns */
+#eh-form-tray .mktoFormCol,
+#eh-form-tray .mktoFieldDescriptor {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Field wrap */
+#eh-form-tray .mktoFieldWrap {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+}
+
+/* Labels — hidden; placeholder / injected option is the visual label */
+#eh-form-tray .mktoLabel {
+  display: none !important;
+}
+
+/* Inputs, selects, textareas */
+#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+#eh-form-tray select,
+#eh-form-tray textarea {
+  display: block !important;
+  width: 100% !important;
+  padding: 13px 16px !important;
+  border: 1px solid var(--eh-border) !important;
+  border-radius: var(--radius-sm) !important;
+  background-color: var(--eh-white) !important;
+  color: var(--eh-black) !important;
+  font-family: var(--font-family) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  height: auto !important;
+  box-shadow: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  margin: 0 !important;
+}
+
+/* Placeholder colour */
+#eh-form-tray input::placeholder,
+#eh-form-tray textarea::placeholder {
+  color: var(--eh-gray-500) !important;
+  opacity: 1 !important;
+}
+
+/* Select placeholder — JS adds .eh-select-placeholder when blank option is active.
+   Mirrors the grey colour that input::placeholder uses. Removed on user selection. */
+#eh-form-tray select.eh-select-placeholder {
+  color: var(--eh-gray-500) !important;
+}
+
+/* Focus ring */
+#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus,
+#eh-form-tray select:focus,
+#eh-form-tray textarea:focus {
+  outline: none !important;
+  border-color: var(--eh-purple) !important;
+  box-shadow: 0 0 0 3px rgba(118,34,215,0.1) !important;
+}
+
+/* Validation — invalid */
+#eh-form-tray input.mktoInvalid,
+#eh-form-tray select.mktoInvalid,
+#eh-form-tray textarea.mktoInvalid {
+  border-color: var(--eh-error) !important;
+}
+
+/* Validation — valid state: green border only */
+#eh-form-tray input.mktoValid:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+#eh-form-tray select.mktoValid,
+#eh-form-tray textarea.mktoValid {
+  border-color: var(--eh-success) !important;
+}
+
+/* Required asterisk — hide (placeholder is the visual label) */
+#eh-form-tray .mktoAsterix { display: none !important; }
+
+/* Autofill override (Chrome/Safari blue background) */
+#eh-form-tray input:-webkit-autofill,
+#eh-form-tray input:-webkit-autofill:hover,
+#eh-form-tray input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 60px #ffffff inset !important;
+  -webkit-text-fill-color: #1A1A1A !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Select dropdown arrow */
+#eh-form-tray select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  padding-right: 40px !important;
+  cursor: pointer !important;
+}
+
+/* Instruction / hint text */
+#eh-form-tray .mktoInstruction {
+  display: block !important;
+  font-size: 12px !important;
+  color: var(--eh-gray-500) !important;
+  line-height: 1.4 !important;
+  margin-top: 4px !important;
+}
+
+/* Inline validation error messages */
+#eh-form-tray .mktoError,
+#eh-form-tray .mktoErrorMsg {
+  font-size: 12px !important;
+  color: var(--eh-error) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+  margin-top: 4px !important;
+}
+
+#eh-form-tray .mktoError .mktoArrow {
+  display: none !important;
+}
+
+/* Checkbox / radio layout */
+#eh-form-tray .mktoLogicalField {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+}
+
+#eh-form-tray input[type="checkbox"],
+#eh-form-tray input[type="radio"] {
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: 3px !important;
+  flex-shrink: 0 !important;
+  accent-color: var(--eh-purple) !important;
+  cursor: pointer !important;
+}
+
+/* Checkbox/radio labels — must stay visible (override global hide above) */
+#eh-form-tray .mktoLogicalField label,
+#eh-form-tray .mktoCheckboxList label {
+  display: block !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: var(--eh-gray-700) !important;
+  line-height: 1.5 !important;
+  cursor: pointer !important;
+}
+
+#eh-form-tray .mktoLogicalField label a {
+  color: var(--eh-purple) !important;
+  text-decoration: underline !important;
+}
+
+/* Button row — sticky at the bottom of the scrollable .eh-form-body */
+#eh-form-tray .mktoButtonRow {
+  display: block !important;
+  width: 100% !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 2 !important;
+  background: var(--eh-white) !important;
+  border-top: 1px solid var(--eh-border) !important;
+  padding: 16px 0 0 !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
+}
+
+#eh-form-tray .mktoButtonWrap {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* EH's plugin button container div */
+#eh-form-tray .eh_marketo_form-button-container {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Back button (multi-step forms) — hidden for single-step */
+#eh-form-tray .eh_marketo_form-back-button {
+  display: none !important;
+}
+
+/* Submit button */
+#eh-form-tray .mktoButton {
+  display: block !important;
+  width: 100% !important;
+  padding: 14px 24px !important;
+  border-radius: var(--radius-sm) !important;
+  border: none !important;
+  background-color: var(--eh-purple) !important;
+  color: var(--eh-white) !important;
+  font-family: var(--font-family) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease !important;
+  margin: 0 !important;
+}
+
+#eh-form-tray .mktoButton:hover,
+#eh-form-tray .mktoButton:focus-visible {
+  background-color: var(--eh-purple-dark) !important;
+  outline: none !important;
+}
+
+/* Loading spinner — shown while Marketo renders the form */
+#eh-form-tray .eh-form-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 16px;
+  color: var(--eh-gray-500);
+  font-size: 14px;
+}
+
+#eh-form-tray .eh-form-loading::before {
+  content: '';
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--eh-border);
+  border-top-color: var(--eh-purple);
+  border-radius: 50%;
+  animation: wbn-spin 0.8s linear infinite;
+}
+
+@keyframes wbn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Auto-hide loader once Marketo has rendered at least one form row */
+.eh-form-body:has(.mktoForm .mktoFormRow) .eh-form-loading {
+  display: none !important;
+}
+</style>
