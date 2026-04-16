@@ -8,6 +8,8 @@
 
   Event key                 Fires when
   ──────────────────────    ────────────────────────────────────────────
+  hf_form_start             User focuses the first form field after opening the tray
+                            (resets if they close and reopen — counts each attempt)
   hf_play_click             Hero video play button clicked
   hf_register_hero          "Reserve My Spot" in hero clicked
   hf_register_sticky        Mobile sticky "Reserve Spot" clicked
@@ -37,6 +39,39 @@
       type: 'event',
       eventName: eventKey,
       tags: tags || {}
+    });
+  }
+
+  // ── Form start tracking ───────────────────────────────────
+  // Fires on the first field interaction each time the tray opens.
+  // Uses MutationObserver to reset the flag when the tray closes,
+  // so a user who abandons and reopens generates a new hf_form_start.
+  // Works with Marketo's async render via focusin delegation on the tray.
+  function initFormStartTracking() {
+    var tray = document.getElementById('eh-form-tray');
+    if (!tray) return;
+
+    var fired = false;
+
+    // Reset flag whenever the tray is hidden (closed)
+    new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (m.attributeName === 'aria-hidden' && tray.getAttribute('aria-hidden') === 'true') {
+          fired = false;
+        }
+      });
+    }).observe(tray, { attributes: true });
+
+    // First focusin on a real form field fires the event
+    tray.addEventListener('focusin', function (e) {
+      if (fired) return;
+      var field = e.target.closest(
+        'input:not([type="hidden"]):not([type="submit"]):not([type="button"]),' +
+        'select, textarea'
+      );
+      if (!field) return;
+      fired = true;
+      optiTrack('hf_form_start');
     });
   }
 
@@ -104,6 +139,7 @@
 
   // ── Init ──────────────────────────────────────────────────
   function init() {
+    initFormStartTracking();
     initClickTracking();
     initCountdownViewTracking();
   }
