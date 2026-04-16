@@ -940,8 +940,8 @@
   to { transform: rotate(360deg); }
 }
 
-/* Auto-hide loader once Marketo populates the form with fields */
-.eh-form-body:has(.mktoForm .mktoField) .eh-form-loading {
+/* Auto-hide loader once Marketo has rendered at least one form row */
+.eh-form-body:has(.mktoForm .mktoFormRow) .eh-form-loading {
   display: none !important;
 }
 </style>
