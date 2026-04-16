@@ -35,6 +35,7 @@
     initFullBleed();
     initTracking();
     initFormTray();
+    initSelectLabels();
     initCountdown();
   }
 
@@ -235,6 +236,35 @@
     });
 
     overlay.addEventListener('click', closeTray);
+  }
+
+  // ============================================================
+  // MARKETO SELECT LABELS
+  // Marketo injects display:none as an inline style on every label.
+  // CSS !important overrides inline styles, but as belt-and-suspenders
+  // this JS also clears that inline style once the form has rendered,
+  // so select field labels are always visible.
+  // ============================================================
+  function initSelectLabels() {
+    var tray = document.getElementById('eh-form-tray');
+    if (!tray) return;
+
+    var attempts = 0;
+    var timer = setInterval(function () {
+      attempts++;
+      var rows = tray.querySelectorAll('.mktoFormRow');
+
+      if (rows.length || attempts >= 50) {
+        clearInterval(timer);
+        rows.forEach(function (row) {
+          if (!row.querySelector('select')) return;
+          var label = row.querySelector('.mktoLabel');
+          if (label) {
+            label.style.display = '';
+          }
+        });
+      }
+    }, 200);
   }
 
   // ============================================================
