@@ -12,6 +12,12 @@
   · form_id — Marketo form ID for this webinar
   · base_url / munchkin_id — Marketo instance (AU or UK)
   · thank_you_page_url — confirmation page after submission
+      ⚠ Custom HTML blocks bypass WordPress PHP rendering, so the
+        marketo-form-v2 plugin cannot auto-generate the ?origin_id=
+        token. Copy the full thank-you URL (including ?origin=...
+        &origin_id=...) from the equivalent native block page's
+        post-submit redirect. The origin_id is static — it only
+        changes if you change the resource attachment in WordPress.
 
   Requires: wbn-00-styles.html on the same page.
 ════════════════════════════════════════════════════════ -->

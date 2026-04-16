@@ -29,6 +29,18 @@ Each template consists of blocks `00` → `05` pasted as separate Custom HTML bl
 
 Configure per resource: `form_id`, `submit_text`, `thank_you_page_url`.
 
+### thank_you_page_url — must include origin_id
+
+The native marketo-form-v2 WordPress block generates `?origin=<slug>&origin_id=<token>` query parameters server-side via PHP. These tell the thank-you page which PDF/resource to serve. **Custom HTML blocks bypass PHP rendering, so this generation never happens** — the thank-you page receives no `origin_id` and cannot serve the correct resource.
+
+**Fix:** copy the full thank-you URL from the equivalent native-block page's post-submit redirect and hard-code it into `thank_you_page_url`:
+
+```
+"thank_you_page_url":"https://employmenthero.com/thank-you/downloadable/?origin=PAGE-SLUG&origin_id=ENCRYPTED-TOKEN"
+```
+
+The `origin_id` is **static** — it is tied to the resource attachment configured in WordPress and does not change per session. It only changes if you swap the PDF attachment on that page. To find it: submit the form on the equivalent native-block page and copy the resulting URL from the browser address bar.
+
 ### Plugin script (at the bottom of `04-form-tray.html`)
 
 ```html

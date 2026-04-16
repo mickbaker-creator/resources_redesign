@@ -12,6 +12,12 @@
   · form_id — Marketo form ID for this resource
   · base_url / munchkin_id — Marketo instance (AU or UK)
   · thank_you_page_url — confirmation page after submission
+      ⚠ Custom HTML blocks bypass WordPress PHP rendering, so the
+        marketo-form-v2 plugin cannot auto-generate the ?origin_id=
+        token. Copy the full thank-you URL (including ?origin=...
+        &origin_id=...) from the equivalent native block page's
+        post-submit redirect. The origin_id is static — it only
+        changes if you change the resource attachment in WordPress.
 
   Requires: 00-styles.html on the same page.
 ═════════════════════════════════════════════════════ -->
@@ -72,7 +78,7 @@
            CONFIGURE: update form_id and thank_you_page_url per resource. -->
       <div
         class="eh_marketo_form-container_v2"
-        data-marketo-form='{"is_multi_steps":false,"form_data":[{"base_url":"//hr.employmenthero.io","munchkin_id":"387-SZZ-170","form_id":"1737","css_classes":""}],"submit_text":"Download now","success_handling_method":"thank_you_page","thank_you_page_url":"https://employmenthero.com/thank-you/downloadable/","progress_indicator_type":"progress-bar","enable_revenue_hero":false}'
+        data-marketo-form='{"is_multi_steps":false,"form_data":[{"base_url":"//hr.employmenthero.io","munchkin_id":"387-SZZ-170","form_id":"1737","css_classes":""}],"submit_text":"Download now","success_handling_method":"thank_you_page","thank_you_page_url":"https://employmenthero.com/thank-you/downloadable/?origin=current-trends-recruitment&origin_id=lK4hKnbq%2B50RCaWgjRMzZOjTqqQtPcRn7RKLL5LkI4saEWX685N2KB%2B9K2w6lAEcXJYwfWFadcKqZWpGDI9elw%3D%3D","progress_indicator_type":"progress-bar","enable_revenue_hero":false}'
       ></div>
 
     </div><!-- /eh-form-body -->
