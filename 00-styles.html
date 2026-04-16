@@ -66,27 +66,27 @@
 }
 
 /* ── Full-bleed: escape WordPress content-width constraint ──────
-   Gutenberg's constrained layout applies max-width and auto margins
-   to every direct child of .wp-block-post-content, including our
-   .wp-block-html wrappers. This mirrors what WP does for .alignfull
-   natively — negative root-padding margins to escape the page gutter.
+   On Employment Hero's WP setup, Custom HTML block content renders
+   as a direct child of .wp-block-post-content with no .wp-block-html
+   wrapper element. Gutenberg's .is-layout-constrained rule applies
+   max-width:81.25rem (1300px) + margin:auto directly to the
+   .eh-resource-landing element itself.
 
-   --wp--style--root--padding-left/right are injected by Gutenberg
-   when useRootPaddingAwareAlignments is enabled (which EH uses).
-   Falls back to the theme's default 1.5rem page padding.
+   This rule overrides that with specificity (0,2,0), which beats
+   Gutenberg's (0,1,0) even when both carry !important.
 
-   JS in 05-scripts.html also adds .alignfull to the wrapper as
-   a secondary mechanism.
+   --wp--style--root--padding-left/right are not set on this site,
+   so no negative-margin gutter offset is needed: width:100% +
+   margin:0 is sufficient to reach full viewport width.
+
+   JS in 05-scripts.html applies the same as inline styles
+   (belt-and-suspenders — inline beats !important).
 ──────────────────────────────────────────────────────────────── */
-.wp-block-html:has(> .eh-resource-landing) {
+.is-layout-constrained > .eh-resource-landing {
   max-width: none !important;
-  width: calc(
-    100% +
-    var(--wp--style--root--padding-left,  1.5rem) +
-    var(--wp--style--root--padding-right, 1.5rem)
-  ) !important;
-  margin-inline-start: calc(-1 * var(--wp--style--root--padding-left,  1.5rem)) !important;
-  margin-inline-end:   calc(-1 * var(--wp--style--root--padding-right, 1.5rem)) !important;
+  width: 100% !important;
+  margin-left:  0 !important;
+  margin-right: 0 !important;
 }
 
 .eh-resource-landing a {
