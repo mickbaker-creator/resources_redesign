@@ -13,9 +13,10 @@
   · Speaker names, roles, and avatar image src/alt
   · data-countdown attribute — ISO 8601 datetime + offset
     (e.g. 2026-06-18T10:00:00+10:00 for 10 AM AEST)
+    When the date is in the past the countdown auto-switches
+    to an "Available on demand" badge (no code change needed).
   · Video-preview image src and alt
   · Register card heading and sub-copy
-  · data-open-form on all CTA buttons to open the form tray
 
   IMAGES: Upload speaker avatars and video thumbnail to
   WordPress Media Library and replace the src attributes.
@@ -43,7 +44,7 @@
             <!-- PLACEHOLDER: badge label -->
             <span class="eh-live-badge">
               <span class="eh-live-dot" aria-hidden="true"></span>
-              Live Webinar
+              On Demand
             </span>
             <!-- PLACEHOLDER: topic label -->
             <span class="eh-topic-label-dark">HR Technology</span>
@@ -68,50 +69,34 @@
             </span>
             <span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              10:00 AM AEDT
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               45 minutes
             </span>
             <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Limited seats
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Online
             </span>
           </div>
 
           <!-- Speaker preview row -->
-          <!-- PLACEHOLDER: update speaker names, roles, and avatar images -->
           <div class="eh-speakers-preview" aria-label="Speakers">
             <div class="eh-speaker-mini">
               <img
-                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop"
-                alt="Sarah Chen"
+                src="https://employmenthero.com/wp-content/uploads/2023/10/Russell-Diaz-150x150.jpg"
+                alt="Russell Dias"
                 class="eh-speaker-mini-avatar"
                 width="44" height="44"
               >
               <div>
-                <p class="eh-speaker-mini-name">Sarah Chen</p>
-                <p class="eh-speaker-mini-role">Head of Product, Employment Hero</p>
-              </div>
-            </div>
-            <div class="eh-speaker-mini">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
-                alt="Michael Torres"
-                class="eh-speaker-mini-avatar"
-                width="44" height="44"
-              >
-              <div>
-                <p class="eh-speaker-mini-name">Michael Torres</p>
-                <p class="eh-speaker-mini-role">Senior HR Advisor</p>
+                <p class="eh-speaker-mini-name">Russell Dias</p>
+                <p class="eh-speaker-mini-role">Product Manager, AI – Employment Hero</p>
               </div>
             </div>
           </div>
 
-          <!-- Countdown timer -->
-          <!-- PLACEHOLDER: update datetime to the exact webinar start time in ISO 8601
-               e.g. 2026-06-18T10:00:00+10:00 for 10 AM AEST on 18 June 2026 -->
+          <!-- Countdown timer
+               When data-countdown is in the past the JS adds .is-past
+               to this wrapper, hiding the digits and showing the
+               on-demand badge instead. No manual toggle needed. -->
           <div class="eh-countdown-wrapper">
             <p class="eh-countdown-label" aria-live="off">Starts in</p>
             <div
@@ -139,6 +124,11 @@
                 <span class="eh-countdown-label-unit" aria-hidden="true">Sec</span>
               </div>
             </div>
+            <!-- Shown automatically when the webinar date has passed -->
+            <div class="eh-on-demand-badge" aria-live="polite">
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Available on demand &mdash; watch now
+            </div>
           </div>
         </div><!-- /left column -->
 
@@ -147,30 +137,32 @@
           <!-- PLACEHOLDER: replace src and alt with actual webinar preview image -->
           <div class="eh-video-preview">
             <img
-              src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=450&fit=crop"
-              alt="Webinar preview — AI Advantage"
+              src="https://employmenthero.com/wp-content/uploads/2025/08/3-1-1.webp"
+              alt="AI Advantage: Your HR Playbook for 2026 — webinar preview"
               width="800" height="450"
             >
             <div class="eh-video-overlay">
-              <!-- Play button is decorative; real CTA is Register button below -->
+              <!-- Play button opens the registration/access form -->
               <button
+                type="button"
                 class="eh-play-button"
                 data-open-form
-                aria-label="Register to watch this webinar"
+                aria-label="Watch this webinar on demand"
                 data-gtm-event="cta_click"
                 data-gtm-label="hero_play_button"
               >
                 <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               </button>
-              <span class="eh-play-label" aria-hidden="true">Register to watch</span>
+              <span class="eh-play-label" aria-hidden="true">Watch on demand</span>
             </div>
           </div>
 
           <!-- PLACEHOLDER: update card copy -->
           <div class="eh-register-card">
-            <h2 class="eh-register-title">Reserve Your Spot</h2>
-            <p class="eh-register-desc">Register now to secure your place. You'll receive a calendar invite and reminder emails.</p>
+            <h2 class="eh-register-title">Watch On Demand</h2>
+            <p class="eh-register-desc">Register for instant access to the full recording and any supporting resources.</p>
             <button
+              type="button"
               class="eh-btn eh-btn-primary eh-btn-lg eh-btn-block"
               data-open-form
               aria-expanded="false"
@@ -178,9 +170,9 @@
               data-gtm-event="cta_click"
               data-gtm-label="hero_register_button"
             >
-              Register Now
+              Watch Now — Free
             </button>
-            <p class="eh-register-note">Can't make it live? Register anyway and we'll send you the recording.</p>
+            <p class="eh-register-note">Instant access. No waiting &mdash; watch at your own pace.</p>
           </div>
         </div><!-- /right column -->
 

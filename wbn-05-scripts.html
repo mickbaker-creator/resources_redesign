@@ -115,10 +115,9 @@
       var diff = target - Date.now();
 
       if (diff <= 0) {
-        if (daysEl)  daysEl.textContent  = '00';
-        if (hoursEl) hoursEl.textContent = '00';
-        if (minsEl)  minsEl.textContent  = '00';
-        if (secsEl)  secsEl.textContent  = '00';
+        // Webinar has passed — show on-demand badge instead of zeroed digits.
+        var wrapper = countdownEl.closest('.eh-countdown-wrapper');
+        if (wrapper) wrapper.classList.add('is-past');
         return;
       }
 

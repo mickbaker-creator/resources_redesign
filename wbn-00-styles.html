@@ -288,6 +288,26 @@
   margin-bottom: 24px;
 }
 
+/* On-demand badge — hidden until JS adds .is-past to the wrapper */
+.eh-on-demand-badge {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  color: var(--eh-white);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+}
+.eh-on-demand-badge svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Past webinar state — swap countdown digits for on-demand badge */
+.eh-countdown-wrapper.is-past .eh-countdown-label,
+.eh-countdown-wrapper.is-past .eh-countdown { display: none; }
+.eh-countdown-wrapper.is-past .eh-on-demand-badge { display: flex; }
+
 /* ── HERO RIGHT COLUMN: VIDEO PREVIEW + REGISTER ─────────── */
 .eh-video-preview {
   position: relative;
