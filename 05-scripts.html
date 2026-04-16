@@ -190,11 +190,12 @@
   }
 
   // ============================================================
-  // MARKETO FORM LABELS
-  // Marketo injects display:none as an inline style on every label.
-  // CSS !important overrides inline styles, but as belt-and-suspenders
-  // this JS also clears that inline style once the form has rendered,
-  // ensuring all field labels (text, select, textarea) are visible.
+  // SELECT PLACEHOLDER INJECTION
+  // <select> has no placeholder attribute (browser limitation).
+  // After Marketo renders, this reads each select's hidden .mktoLabel
+  // text, ensures a blank disabled first option exists using that text,
+  // and applies .eh-select-placeholder (grey colour) while no real
+  // value is chosen — matching the appearance of input::placeholder.
   // ============================================================
   function initSelectLabels() {
     var tray = document.getElementById('eh-form-tray');
@@ -207,8 +208,39 @@
 
       if (rows.length || attempts >= 50) {
         clearInterval(timer);
-        tray.querySelectorAll('.mktoLabel').forEach(function (label) {
-          label.style.display = '';
+
+        rows.forEach(function (row) {
+          var sel = row.querySelector('select');
+          if (!sel) return;
+
+          // Read the label text Marketo set (it's hidden in the DOM).
+          var labelEl = row.querySelector('.mktoLabel');
+          var labelText = labelEl ? labelEl.textContent.replace(/\*/g, '').trim() : '';
+
+          // If the first option has a real value, prepend a blank placeholder.
+          var firstOpt = sel.options[0];
+          if (firstOpt && firstOpt.value !== '') {
+            var blank = document.createElement('option');
+            blank.value    = '';
+            blank.disabled = true;
+            blank.selected = true;
+            blank.textContent = labelText || 'Select\u2026';
+            sel.insertBefore(blank, firstOpt);
+          } else if (firstOpt && labelText) {
+            // Blank option already exists — replace its text with the label.
+            firstOpt.textContent = labelText;
+          }
+
+          // Grey colour while placeholder is active; normal once user picks.
+          function syncClass() {
+            if (sel.value === '') {
+              sel.classList.add('eh-select-placeholder');
+            } else {
+              sel.classList.remove('eh-select-placeholder');
+            }
+          }
+          syncClass();
+          sel.addEventListener('change', syncClass);
         });
       }
     }, 200);

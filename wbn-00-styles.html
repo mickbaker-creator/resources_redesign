@@ -710,17 +710,9 @@
   width: 100% !important;
 }
 
-/* Labels — visible above every field for consistent styling */
+/* Labels — hidden; placeholder / injected option is the visual label */
 #eh-form-tray .mktoLabel {
-  display: block !important;
-  float: none !important;
-  width: 100% !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  color: var(--eh-gray-500) !important;
-  margin-bottom: 4px !important;
-  padding-bottom: 0 !important;
-  text-align: left !important;
+  display: none !important;
 }
 
 /* Inputs, selects, textareas */
@@ -750,6 +742,12 @@
 #eh-form-tray textarea::placeholder {
   color: var(--eh-gray-500) !important;
   opacity: 1 !important;
+}
+
+/* Select placeholder — JS adds .eh-select-placeholder when blank option is active.
+   Mirrors the grey colour that input::placeholder uses. Removed on user selection. */
+#eh-form-tray select.eh-select-placeholder {
+  color: var(--eh-gray-500) !important;
 }
 
 /* Focus ring */
