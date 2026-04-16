@@ -111,13 +111,17 @@
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
+    var wrapper = countdownEl.closest('.eh-countdown-wrapper');
+
     function tick() {
       var diff = target - Date.now();
 
       if (diff <= 0) {
         // Webinar has passed — show on-demand badge instead of zeroed digits.
-        var wrapper = countdownEl.closest('.eh-countdown-wrapper');
-        if (wrapper) wrapper.classList.add('is-past');
+        if (wrapper) {
+          wrapper.classList.add('is-past');
+          wrapper.style.visibility = 'visible';
+        }
         return;
       }
 
@@ -130,6 +134,9 @@
       if (hoursEl) hoursEl.textContent = pad(hours);
       if (minsEl)  minsEl.textContent  = pad(mins);
       if (secsEl)  secsEl.textContent  = pad(secs);
+
+      // Digits are set — reveal the wrapper on the first tick.
+      if (wrapper) wrapper.style.visibility = 'visible';
 
       setTimeout(tick, 1000);
     }
