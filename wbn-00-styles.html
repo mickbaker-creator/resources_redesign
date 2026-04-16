@@ -648,104 +648,300 @@
 
 .eh-form-desc { font-size: 14px; color: var(--eh-gray-500); margin-bottom: 24px; }
 
-/* 2-column row for first/last name */
-.eh-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 0;
+/* ── MARKETO FORM v2 OVERRIDES ────────────────────────────────
+   Scoped to #eh-form-tray. Styles the MktoForms2 output rendered
+   by Employment Hero's marketo-form-v2 WordPress plugin.
+────────────────────────────────────────────────────────────── */
+
+/* Box-sizing reset */
+#eh-form-tray .mktoForm,
+#eh-form-tray .mktoForm * {
+  box-sizing: border-box;
 }
 
-/* Sticky submit footer */
-.eh-form-footer {
-  flex-shrink: 0;
-  padding: 16px 24px;
-  background: var(--eh-white);
-  border-top: 1px solid var(--eh-border);
+/* Form wrapper */
+#eh-form-tray .mktoForm {
+  width: 100% !important;
+  padding: 0 !important;
+  font-family: var(--font-family) !important;
+  font-size: 14px !important;
 }
 
-/* ── NATIVE FORM FIELDS ───────────────────────────────────── */
-#eh-form-tray input[type="text"],
-#eh-form-tray input[type="email"],
-#eh-form-tray input[type="tel"],
+/* Spacers Marketo injects — hide */
+#eh-form-tray .mktoOffset,
+#eh-form-tray .mktoGutter,
+#eh-form-tray .mktoClear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Fieldset */
+#eh-form-tray .mktoForm fieldset {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+
+/* Rows — full-width, spaced */
+#eh-form-tray .mktoFormRow {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+  margin-bottom: 16px !important;
+}
+
+/* Columns */
+#eh-form-tray .mktoFormCol,
+#eh-form-tray .mktoFieldDescriptor {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Field wrap */
+#eh-form-tray .mktoFieldWrap {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+}
+
+/* Labels — hidden; placeholder provides the visual label */
+#eh-form-tray .mktoLabel {
+  display: none !important;
+}
+
+/* Inputs, selects, textareas */
+#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+#eh-form-tray select,
+#eh-form-tray textarea {
+  display: block !important;
+  width: 100% !important;
+  padding: 13px 16px !important;
+  border: 1px solid var(--eh-border) !important;
+  border-radius: var(--radius-sm) !important;
+  background-color: var(--eh-white) !important;
+  color: var(--eh-black) !important;
+  font-family: var(--font-family) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  height: auto !important;
+  box-shadow: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  margin: 0 !important;
+}
+
+/* Placeholder colour */
+#eh-form-tray input::placeholder,
+#eh-form-tray textarea::placeholder {
+  color: var(--eh-gray-500) !important;
+  opacity: 1 !important;
+}
+
+/* Focus ring */
+#eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus,
+#eh-form-tray select:focus,
+#eh-form-tray textarea:focus {
+  outline: none !important;
+  border-color: var(--eh-purple) !important;
+  box-shadow: 0 0 0 3px rgba(118,34,215,0.1) !important;
+}
+
+/* Validation — invalid */
+#eh-form-tray input.mktoInvalid,
+#eh-form-tray select.mktoInvalid,
+#eh-form-tray textarea.mktoInvalid {
+  border-color: var(--eh-error) !important;
+}
+
+/* Validation — valid: green border + circled tick on text inputs */
+#eh-form-tray input.mktoValid:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]) {
+  border-color: var(--eh-success) !important;
+  padding-right: 44px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='10' fill='%2316a34a'/%3E%3Cpath d='M5.5 10.5l3 3L15 7' stroke='%23fff' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 20px !important;
+}
+
+/* Selects and textareas: green border only */
+#eh-form-tray select.mktoValid,
+#eh-form-tray textarea.mktoValid {
+  border-color: var(--eh-success) !important;
+}
+
+/* Required asterisk — hide (placeholder is the visual label) */
+#eh-form-tray .mktoAsterix { display: none !important; }
+
+/* Autofill override (Chrome/Safari blue background) */
+#eh-form-tray input:-webkit-autofill,
+#eh-form-tray input:-webkit-autofill:hover,
+#eh-form-tray input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 60px #ffffff inset !important;
+  -webkit-text-fill-color: #1A1A1A !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Select dropdown arrow */
 #eh-form-tray select {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--eh-border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-family: var(--font-family);
-  color: var(--eh-black);
-  background: var(--eh-white);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  padding-right: 40px !important;
+  cursor: pointer !important;
 }
 
-#eh-form-tray input[type="text"]:focus,
-#eh-form-tray input[type="email"]:focus,
-#eh-form-tray input[type="tel"]:focus,
-#eh-form-tray select:focus {
-  outline: none;
-  border-color: var(--eh-purple);
-  box-shadow: 0 0 0 3px rgba(118,34,215,0.1);
+/* Instruction / hint text */
+#eh-form-tray .mktoInstruction {
+  display: block !important;
+  font-size: 12px !important;
+  color: var(--eh-gray-500) !important;
+  line-height: 1.4 !important;
+  margin-top: 4px !important;
 }
 
-#eh-form-tray input::placeholder { color: var(--eh-gray-500); }
-
-#eh-form-tray select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 40px;
-  cursor: pointer;
+/* Inline validation error messages */
+#eh-form-tray .mktoError,
+#eh-form-tray .mktoErrorMsg {
+  font-size: 12px !important;
+  color: var(--eh-error) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+  margin-top: 4px !important;
 }
 
-#eh-form-tray .eh-select-placeholder { color: var(--eh-gray-500); }
+#eh-form-tray .mktoError .mktoArrow {
+  display: none !important;
+}
 
-#eh-form-tray .eh-field       { margin-bottom: 1.25rem; }
-#eh-form-tray .eh-field-hint  { font-size: 12px; color: var(--eh-gray-500); margin-top: 4px; line-height: 1.4; }
-#eh-form-tray .eh-field-invalid { border-color: var(--eh-error) !important; }
-#eh-form-tray .mktoValid        { border-color: var(--eh-success) !important; }
+/* Checkbox / radio layout */
+#eh-form-tray .mktoLogicalField {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+}
 
-#eh-form-tray .eh-field-check {
+#eh-form-tray input[type="checkbox"],
+#eh-form-tray input[type="radio"] {
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: 3px !important;
+  flex-shrink: 0 !important;
+  accent-color: var(--eh-purple) !important;
+  cursor: pointer !important;
+}
+
+/* Checkbox/radio labels — must stay visible (override global hide above) */
+#eh-form-tray .mktoLogicalField label,
+#eh-form-tray .mktoCheckboxList label {
+  display: block !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: var(--eh-gray-700) !important;
+  line-height: 1.5 !important;
+  cursor: pointer !important;
+}
+
+#eh-form-tray .mktoLogicalField label a {
+  color: var(--eh-purple) !important;
+  text-decoration: underline !important;
+}
+
+/* Button row — sticky at the bottom of the scrollable .eh-form-body */
+#eh-form-tray .mktoButtonRow {
+  display: block !important;
+  width: 100% !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 2 !important;
+  background: var(--eh-white) !important;
+  border-top: 1px solid var(--eh-border) !important;
+  padding: 16px 0 0 !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
+}
+
+#eh-form-tray .mktoButtonWrap {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* EH's plugin button container div */
+#eh-form-tray .eh_marketo_form-button-container {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Back button (multi-step forms) — hidden for single-step */
+#eh-form-tray .eh_marketo_form-back-button {
+  display: none !important;
+}
+
+/* Submit button */
+#eh-form-tray .mktoButton {
+  display: block !important;
+  width: 100% !important;
+  padding: 14px 24px !important;
+  border-radius: var(--radius-sm) !important;
+  border: none !important;
+  background-color: var(--eh-purple) !important;
+  color: var(--eh-white) !important;
+  font-family: var(--font-family) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease !important;
+  margin: 0 !important;
+}
+
+#eh-form-tray .mktoButton:hover,
+#eh-form-tray .mktoButton:focus-visible {
+  background-color: var(--eh-purple-dark) !important;
+  outline: none !important;
+}
+
+/* Loading spinner — shown while Marketo renders the form */
+#eh-form-tray .eh-form-loading {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 16px;
+  color: var(--eh-gray-500);
+  font-size: 14px;
 }
 
-#eh-form-tray .eh-field-check input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin-top: 2px;
-  flex-shrink: 0;
-  cursor: pointer;
-  accent-color: var(--eh-purple);
+#eh-form-tray .eh-form-loading::before {
+  content: '';
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--eh-border);
+  border-top-color: var(--eh-purple);
+  border-radius: 50%;
+  animation: wbn-spin 0.8s linear infinite;
 }
 
-#eh-form-tray .eh-field-check label {
-  font-size: 12px;
-  color: var(--eh-gray-700);
-  line-height: 1.5;
-  cursor: pointer;
+@keyframes wbn-spin {
+  to { transform: rotate(360deg); }
 }
 
-#eh-form-tray .eh-field-check label a {
-  color: var(--eh-purple);
-  text-decoration: underline;
+/* Auto-hide loader once Marketo populates the form with fields */
+.eh-form-body:has(.mktoForm .mktoField) .eh-form-loading {
+  display: none !important;
 }
-
-#eh-form-tray .eh-check-invalid label { color: var(--eh-error); }
-
-#eh-form-tray .eh-form-error-msg {
-  font-size: 12px;
-  color: var(--eh-error);
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  border-radius: 6px;
-  padding: 12px 16px;
-  margin-top: 8px;
-}
-
-.eh-required-mark { color: var(--eh-error); }
 </style>
