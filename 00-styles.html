@@ -1495,6 +1495,23 @@
   display: none !important;
 }
 
+/* Re-show labels for select fields — selects have no placeholder attribute */
+#eh-form-tray .mktoFormRow:has(select) .mktoLabel {
+  display: block !important;
+  float: none !important;
+  width: 100% !important;
+  font-size: var(--wp--preset--font-size--xs, 0.75rem) !important;
+  font-weight: 500 !important;
+  color: var(--wp--preset--color--neutral-500) !important;
+  margin-bottom: 0.25rem !important;
+  text-align: left !important;
+}
+
+/* Suppress Marketo's required asterisk inside select labels */
+#eh-form-tray .mktoFormRow:has(select) .mktoAsterix {
+  display: none !important;
+}
+
 /* ── Inputs, selects, textareas ────────────────────────────── */
 #eh-form-tray input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
 #eh-form-tray select,
