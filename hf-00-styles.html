@@ -583,7 +583,11 @@
 @media (max-width: 768px) {
   .eh-webinar-title    { font-size: 28px; }
   .eh-webinar-desc     { font-size: 16px; }
-  .eh-countdown        { flex-wrap: wrap; justify-content: center; }
+  /* Countdown: compact single-row layout on mobile (fits 375px) */
+  .eh-countdown        { gap: 8px; padding: 14px 12px; }
+  .eh-countdown-value  { width: 52px; height: 52px; font-size: 18px; border-radius: 10px; }
+  .eh-countdown-separator { font-size: 18px; }
+  .eh-countdown-label-unit { font-size: 10px; margin-top: 5px; }
   .eh-speakers-preview { flex-direction: column; align-items: flex-start; gap: 12px; }
   .eh-related-grid     { grid-template-columns: 1fr; }
   .eh-form-grid        { grid-template-columns: 1fr; }
@@ -968,5 +972,62 @@
 /* Auto-hide loader once Marketo has rendered at least one form row */
 .eh-form-body:has(.mktoForm .mktoFormRow) .eh-form-loading {
   display: none !important;
+}
+
+/* ── MOBILE STICKY REGISTRATION BAR ──────────────────────────
+   Fixed to viewport bottom on mobile. Always visible above the
+   fold. z-index sits below form tray (9999) and overlay (9998)
+   so it naturally disappears behind the open form.
+────────────────────────────────────────────────────────────── */
+.eh-sticky-cta { display: none; }
+
+@media (max-width: 768px) {
+  .eh-sticky-cta {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9997;
+    background: var(--eh-white);
+    border-top: 1px solid var(--eh-border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+    padding: 10px 16px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    font-family: var(--font-family);
+  }
+  .eh-sticky-cta-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .eh-sticky-cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .eh-sticky-cta-text strong {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--eh-black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .eh-sticky-cta-text span {
+    font-size: 11px;
+    color: var(--eh-gray-500);
+    white-space: nowrap;
+  }
+  .eh-sticky-cta .eh-btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  /* Push page content up so sticky bar doesn't cover the last section */
+  body { padding-bottom: 68px; }
 }
 </style>

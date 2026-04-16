@@ -1,0 +1,118 @@
+<!--
+  OPTIMIZELY EXPERIMENT TRACKING — HeroForce: True Cost Of Employment
+  ════════════════════════════════════════════════════════
+  WordPress: Paste as a Custom HTML block after hf-05-scripts.html.
+  Can also be pasted directly into Optimizely's variation JS editor.
+
+  OPTIMIZELY SETUP — create these custom event keys in your project:
+
+  Event key                 Fires when
+  ──────────────────────    ────────────────────────────────────────────
+  hf_play_click             Hero video play button clicked
+  hf_register_hero          "Reserve My Spot" in hero clicked
+  hf_register_sticky        Mobile sticky "Reserve Spot" clicked
+  hf_register_sidebar       "Reserve My Spot" in Event Details sidebar clicked
+  hf_countdown_badge_click  On-demand "catch up now" badge clicked (post-event)
+  hf_countdown_view         Countdown widget enters viewport (50% threshold)
+  hf_event_details_click    Any click within the Event Details sidebar card
+  hf_host_ben_click         Ben Knight's host row clicked
+  hf_host_shane_click       Shane Duffy's host row clicked
+
+  USAGE — this same block runs on both control and variant.
+  Variation differences are in the HTML/CSS, not in this file.
+
+  NOTE: For Optimizely Web Experimentation, paste the <script>
+  contents (without the <script> tags) into the variation's
+  "Custom JavaScript" panel. The optiTrack helper guards against
+  window.optimizely not being ready yet.
+════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  // ── Optimizely event helper ────────────────────────────────
+  function optiTrack(eventKey, tags) {
+    window['optimizely'] = window['optimizely'] || [];
+    window['optimizely'].push({
+      type: 'event',
+      eventName: eventKey,
+      tags: tags || {}
+    });
+  }
+
+  // ── Click tracking (event delegation) ─────────────────────
+  function initClickTracking() {
+    document.addEventListener('click', function (e) {
+
+      // Hero video play button
+      if (e.target.closest('.eh-play-button')) {
+        optiTrack('hf_play_click');
+        return;
+      }
+
+      // On-demand "catch up now" badge (shown after event date passes)
+      if (e.target.closest('[data-gtm-label="countdown_badge_catch_up"]')) {
+        optiTrack('hf_countdown_badge_click');
+        return;
+      }
+
+      // Register / reserve buttons — differentiated by gtm-label
+      var openBtn = e.target.closest('[data-open-form]');
+      if (openBtn) {
+        var label = openBtn.dataset.gtmLabel || '';
+        if (label === 'hero_register_button')  { optiTrack('hf_register_hero'); }
+        if (label === 'sticky_cta_register')   { optiTrack('hf_register_sticky'); }
+        if (label === 'sidebar_register_button') { optiTrack('hf_register_sidebar'); }
+        return;
+      }
+
+      // Event Details sidebar card (any click within)
+      if (e.target.closest('[data-tracking="event-details-card"]')) {
+        optiTrack('hf_event_details_click');
+        return;
+      }
+
+      // Meet Your Hosts — individual host rows
+      if (e.target.closest('[data-tracking="host-ben"]')) {
+        optiTrack('hf_host_ben_click');
+        return;
+      }
+      if (e.target.closest('[data-tracking="host-shane"]')) {
+        optiTrack('hf_host_shane_click');
+        return;
+      }
+
+    });
+  }
+
+  // ── Countdown in-viewport tracking ────────────────────────
+  // Fires once when 50% of the countdown widget enters view.
+  function initCountdownViewTracking() {
+    var wrapper = document.querySelector('.eh-countdown-wrapper');
+    if (!wrapper) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var fired = false;
+    new IntersectionObserver(function (entries, obs) {
+      if (entries[0].isIntersecting && !fired) {
+        fired = true;
+        optiTrack('hf_countdown_view');
+        obs.disconnect();
+      }
+    }, { threshold: 0.5 }).observe(wrapper);
+  }
+
+  // ── Init ──────────────────────────────────────────────────
+  function init() {
+    initClickTracking();
+    initCountdownViewTracking();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
