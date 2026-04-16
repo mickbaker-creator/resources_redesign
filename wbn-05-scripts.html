@@ -239,11 +239,11 @@
   }
 
   // ============================================================
-  // MARKETO SELECT LABELS
+  // MARKETO FORM LABELS
   // Marketo injects display:none as an inline style on every label.
   // CSS !important overrides inline styles, but as belt-and-suspenders
   // this JS also clears that inline style once the form has rendered,
-  // so select field labels are always visible.
+  // ensuring all field labels (text, select, textarea) are visible.
   // ============================================================
   function initSelectLabels() {
     var tray = document.getElementById('eh-form-tray');
@@ -256,12 +256,8 @@
 
       if (rows.length || attempts >= 50) {
         clearInterval(timer);
-        rows.forEach(function (row) {
-          if (!row.querySelector('select')) return;
-          var label = row.querySelector('.mktoLabel');
-          if (label) {
-            label.style.display = '';
-          }
+        tray.querySelectorAll('.mktoLabel').forEach(function (label) {
+          label.style.display = '';
         });
       }
     }, 200);

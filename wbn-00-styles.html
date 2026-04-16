@@ -710,14 +710,8 @@
   width: 100% !important;
 }
 
-/* Labels — hidden for text/email/tel inputs (placeholder is the visual label).
-   Exception: select fields have no placeholder — show their label. */
+/* Labels — visible above every field for consistent styling */
 #eh-form-tray .mktoLabel {
-  display: none !important;
-}
-
-/* Re-show labels for select fields */
-#eh-form-tray .mktoFormRow:has(select) .mktoLabel {
   display: block !important;
   float: none !important;
   width: 100% !important;
@@ -725,12 +719,8 @@
   font-weight: 500 !important;
   color: var(--eh-gray-500) !important;
   margin-bottom: 4px !important;
+  padding-bottom: 0 !important;
   text-align: left !important;
-}
-
-/* Suppress Marketo's required asterisk inside select labels */
-#eh-form-tray .mktoFormRow:has(select) .mktoAsterix {
-  display: none !important;
 }
 
 /* Inputs, selects, textareas */

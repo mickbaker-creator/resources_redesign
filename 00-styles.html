@@ -1425,7 +1425,7 @@
    Key facts about Marketo form 1737's HTML structure:
    · Each field is in its own .mktoFormRow (single column)
    · .mktoAsterix is a <div> inside .mktoLabel
-   · Labels are hidden; placeholder text provides visual labelling
+   · Labels are visible above every field; placeholders are supplementary hints
    · Hint text uses .mktoInstruction (not .mktoHint)
    · Submit is inside .eh_marketo_form-button-container > .mktoButton
    · Spacers: .mktoOffset, .mktoGutter, .mktoClear — all hidden
@@ -1488,15 +1488,8 @@
   width: 100% !important;
 }
 
-/* ── Labels — hidden visually; placeholder provides the label.
-      Accessibility is maintained via aria-labelledby on each input.
-      Exception: checkbox/radio labels must stay visible (see below). ── */
+/* ── Labels — visible above every field for consistent styling ── */
 #eh-form-tray .mktoLabel {
-  display: none !important;
-}
-
-/* Re-show labels for select fields — selects have no placeholder attribute */
-#eh-form-tray .mktoFormRow:has(select) .mktoLabel {
   display: block !important;
   float: none !important;
   width: 100% !important;
@@ -1504,12 +1497,8 @@
   font-weight: 500 !important;
   color: var(--wp--preset--color--neutral-500) !important;
   margin-bottom: 0.25rem !important;
+  padding-bottom: 0 !important;
   text-align: left !important;
-}
-
-/* Suppress Marketo's required asterisk inside select labels */
-#eh-form-tray .mktoFormRow:has(select) .mktoAsterix {
-  display: none !important;
 }
 
 /* ── Inputs, selects, textareas ────────────────────────────── */
@@ -1579,10 +1568,7 @@
   border-color: #16a34a !important;
 }
 
-/* ── Required asterisk ──────────────────────────────────────── */
-/* Hide Marketo's native asterisk span.
-   The visible asterisk is injected by JS as .eh-required-mark into the
-   inner checkbox label, excluding the marketing opt-in field. */
+/* ── Required asterisk — hide Marketo's native asterisk span ── */
 #eh-form-tray .mktoAsterix { display: none !important; }
 
 .eh-required-mark {
