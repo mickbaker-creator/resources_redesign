@@ -56,15 +56,19 @@
 
   // ============================================================
   // FULL-BLEED BREAKOUT
-  // Adds .alignfull to each .wp-block-html wrapper so Gutenberg
-  // expands it to full viewport width.
+  // On Employment Hero's WP setup, Custom HTML blocks render
+  // as direct children of .is-layout-constrained with no
+  // .wp-block-html wrapper. Apply overrides directly to each
+  // .eh-webinar-landing element. Inline styles win over any
+  // !important in external stylesheets, so this is the most
+  // reliable fallback alongside the CSS rule in wbn-00-styles.
   // ============================================================
   function initFullBleed() {
-    document.querySelectorAll('.eh-webinar-landing').forEach(function (landing) {
-      var block = landing.closest('.wp-block-html');
-      if (block) {
-        block.classList.add('alignfull');
-      }
+    document.querySelectorAll('.eh-webinar-landing').forEach(function (el) {
+      el.style.maxWidth    = 'none';
+      el.style.width       = '100%';
+      el.style.marginLeft  = '0';
+      el.style.marginRight = '0';
     });
   }
 

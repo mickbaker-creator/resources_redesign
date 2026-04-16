@@ -58,27 +58,27 @@
 .eh-webinar-landing a:hover { color: var(--eh-purple-dark); }
 
 /* ── FULL-BLEED BREAKOUT ──────────────────────────────────── */
-/* Gutenberg's .is-layout-constrained applies max-width and    */
-/* auto margins to every direct child of .wp-block-post-       */
-/* content, including Custom HTML block wrappers (.wp-block-   */
-/* html). This rule negates those root-padding margins so each */
-/* webinar block can span the full viewport width.             */
+/* On Employment Hero's WP setup, Custom HTML block content    */
+/* renders as a DIRECT child of .wp-block-post-content with    */
+/* no .wp-block-html wrapper. Gutenberg's .is-layout-          */
+/* constrained rule applies max-width (81.25rem = 1300px) and  */
+/* margin:auto to every direct child that lacks .alignfull.    */
 /*                                                             */
-/* --wp--style--root--padding-left/right are injected by       */
-/* Gutenberg when useRootPaddingAwareAlignments is enabled.    */
-/* Falls back to the theme's default 1.5rem page padding.      */
+/* This rule overrides those constraints on .eh-webinar-       */
+/* landing directly. Specificity (0,2,0) beats Gutenberg's     */
+/* (0,1,0) even when both carry !important.                    */
 /*                                                             */
-/* wbn-05-scripts.html also adds .alignfull to the wrapper     */
-/* as a secondary mechanism for themes that handle it natively.*/
-.wp-block-html:has(> .eh-webinar-landing) {
+/* Note: --wp--style--root--padding-left/right are not set on  */
+/* this site, so the parent has no gutter padding to offset.   */
+/* width:100% + margin:0 is sufficient to reach full-width.    */
+/*                                                             */
+/* wbn-05-scripts.html applies the same overrides as inline     */
+/* styles (belt-and-suspenders; inline beats !important).      */
+.is-layout-constrained > .eh-webinar-landing {
   max-width: none !important;
-  width: calc(
-    100% +
-    var(--wp--style--root--padding-left,  1.5rem) +
-    var(--wp--style--root--padding-right, 1.5rem)
-  ) !important;
-  margin-inline-start: calc(-1 * var(--wp--style--root--padding-left,  1.5rem)) !important;
-  margin-inline-end:   calc(-1 * var(--wp--style--root--padding-right, 1.5rem)) !important;
+  width: 100% !important;
+  margin-left:  0 !important;
+  margin-right: 0 !important;
 }
 
 /* ── CONTAINER (scoped to prevent clashing with theme) ────── */
