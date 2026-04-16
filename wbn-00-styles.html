@@ -288,7 +288,8 @@
   margin-bottom: 24px;
 }
 
-/* On-demand badge — hidden until JS adds .is-past to the wrapper */
+/* On-demand badge — hidden until JS adds .is-past to the wrapper.
+   Rendered as a <button> so it opens the form on click. */
 .eh-on-demand-badge {
   display: none;
   align-items: center;
@@ -296,11 +297,16 @@
   color: var(--eh-white);
   font-size: 15px;
   font-weight: 600;
+  font-family: var(--font-family);
+  text-align: left;
   padding: 14px 20px;
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
+.eh-on-demand-badge:hover { background: rgba(255,255,255,0.2); }
 .eh-on-demand-badge svg { width: 18px; height: 18px; flex-shrink: 0; }
 
 /* Past webinar state — swap countdown digits for on-demand badge */
@@ -444,7 +450,7 @@
 .eh-session-content p           { font-size: 16px; color: var(--eh-gray-700); line-height: 1.7; margin-bottom: 16px; }
 
 /* ── SIDEBAR ──────────────────────────────────────────────── */
-.eh-sidebar       { position: sticky; top: 24px; align-self: start; }
+.eh-sidebar       { position: sticky; top: 80px; align-self: start; }
 .eh-sidebar-card  { background: var(--eh-white); border: 1px solid var(--eh-border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
 .eh-sidebar-title { font-size: 14px; font-weight: 600; color: var(--eh-black); margin-bottom: 16px; }
 
