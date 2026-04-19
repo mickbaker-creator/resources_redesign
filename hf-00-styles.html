@@ -880,12 +880,17 @@
   cursor: pointer !important;
 }
 
-/* Required asterisk on checkbox/consent labels */
+/* Required asterisk on first checkbox label only */
 #eh-form-tray .mktoLogicalField label::after,
 #eh-form-tray .mktoCheckboxList label::after {
   content: ' *';
   color: #DC2626;
   font-weight: 600;
+}
+
+/* Remove asterisk from second checkbox onwards */
+#eh-form-tray .mktoFormRow:has(.mktoLogicalField) ~ .mktoFormRow:has(.mktoLogicalField) label::after {
+  content: none !important;
 }
 
 #eh-form-tray .mktoLogicalField label a {
